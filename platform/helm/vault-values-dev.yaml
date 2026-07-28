@@ -1,0 +1,20 @@
+# Vault Helm chart values for local development only.
+# Do NOT use in production.
+
+global:
+  enabled: true
+
+injector:
+  enabled: false
+
+server:
+  dev:
+    enabled: true
+    devRootToken: "root"
+  standalone:
+    enabled: true
+  dataStorage:
+    enabled: false
+
+ui:
+  enabled: true

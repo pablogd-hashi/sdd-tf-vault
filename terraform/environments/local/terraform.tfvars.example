@@ -1,0 +1,4 @@
+kubeconfig_context   = "kind-pe-copilot"
+vault_addr           = "http://127.0.0.1:8200"
+vault_token          = "root"
+kubernetes_auth_path = "kubernetes"

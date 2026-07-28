@@ -1,0 +1,71 @@
+name: Validate
+
+on:
+  pull_request:
+    paths:
+      - 'terraform/**'
+      - 'requests/**'
+      - 'tests/**'
+      - 'scripts/**'
+  push:
+    branches: [main]
+
+jobs:
+  terraform-fmt-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.0
+
+      - name: Terraform fmt check
+        run: |
+          terraform fmt -check -recursive terraform/
+          terraform fmt -check -recursive requests/
+
+      - name: Validate platform Terraform
+        run: |
+          cd terraform/platform
+          terraform init -backend=false
+          terraform validate
+
+      - name: Validate vault-service-onboard module
+        run: |
+          cd terraform/modules/vault-service-onboard/examples/minimal
+          terraform init -backend=false
+          terraform validate
+
+      - name: Validate golden request
+        run: |
+          cd requests/PE-001-payments-api/03-terraform
+          terraform init -backend=false
+          terraform validate
+
+  go-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'
+
+      - name: Run Terratest (skip without Vault)
+        env:
+          SKIP_VAULT_TESTS: 'true'
+        run: |
+          cd tests
+          go mod tidy
+          go test -v -timeout 5m ./...
+
+  phase-order:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check golden example phase order
+        run: |
+          chmod +x scripts/*.sh
+          ./scripts/check-phase-order.sh PE-001-payments-api

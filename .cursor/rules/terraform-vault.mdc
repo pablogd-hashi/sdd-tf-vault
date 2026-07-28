@@ -1,0 +1,33 @@
+---
+description: Terraform and Vault conventions for platform modules and requests
+globs: terraform/**,requests/**/03-terraform/**
+alwaysApply: false
+---
+
+# Terraform & Vault Conventions
+
+## Security
+
+- **Never hardcode tokens** — use `var.vault_token` with `sensitive = true`
+- **Least privilege** — policies scoped to `secret/data/teams/{team}/{service}/*` only
+- **Dev tokens only locally** — default `root` token is for Vault dev mode only
+
+## Naming
+
+- Policy: `{team}-{service_name}` (e.g. `payments-payments-api`)
+- K8s auth role: same as policy name
+- Secret paths: `teams/{team}/{service_name}/{path}` under KV mount `secret`
+
+## Module usage
+
+Request Terraform must call `terraform/modules/vault-service-onboard` — do not inline Vault resources.
+
+## Before PR
+
+Run validation and ensure PASS:
+
+```bash
+make validate REQUEST=<request-id>
+```
+
+Do not open a PR if validation fails or Bugbot reports Critical findings.

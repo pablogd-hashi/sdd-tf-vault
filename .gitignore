@@ -1,0 +1,40 @@
+# Terraform
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Local env
+.env
+.env.local
+
+# Cursor MCP secrets
+.cursor/mcp.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Go
+tests/vendor/
+*.test
+*.out
+
+# Validation artifacts (generated locally)
+requests/**/04-validation/report.md.tmp
+
+# Bootstrap output
+# Bootstrap output
+.platform-state
+.vault-port-forward.log
+
+# Terraform local state
+.terraform-platform.tfstate
+.terraform-platform.tfstate.backup

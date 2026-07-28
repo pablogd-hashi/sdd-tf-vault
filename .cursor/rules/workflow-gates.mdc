@@ -1,0 +1,30 @@
+---
+description: Enforce spec-driven workflow phase order and human approval gates
+alwaysApply: true
+---
+
+# Workflow Gates
+
+This repository uses a **specification-driven workflow**. Never skip phases.
+
+## Phase order
+
+1. `01-spec/` — from Jira ticket (skill: `jira-to-spec`)
+2. `02-plan/` — from approved spec (skill: `spec-to-plan`)
+3. `03-terraform/` — from approved plan (skill: `plan-to-terraform`)
+4. `04-validation/` — run `make validate REQUEST=<id>` (skill: `validate-infra`)
+5. `05-review/` — Bugbot review (skill: `bugbot-review`)
+6. `06-pr/` — GitHub PR (skill: `open-github-pr`)
+7. `07-jira-update/` — Jira comment (skill: `jira-update`)
+
+## Rules
+
+- **Stop after each phase** and ask for explicit human approval before continuing.
+- **Never edit a later phase** without re-running validation for affected phases.
+- **Never invent values** — copy module inputs verbatim from the approved spec/plan.
+- **Never create placeholder code** — every file must be complete and runnable.
+- Run `./scripts/check-phase-order.sh <request-id>` before committing phase artifacts.
+
+## Approval signal
+
+Proceed only when the user says "approved", "proceed", or marks sign-off ☑ in the spec/plan.
