@@ -1,6 +1,8 @@
 # Demo Walkthrough (~15 minutes)
 
-End-to-end demonstration of the Platform Engineering Copilot workflow.
+End-to-end demonstration of the Platform Engineering Copilot workflow. Each phase below produces one artifact in `requests/PE-002-<service>/`.
+
+[![Seven-phase SDD workflow](diagrams/01-workflow-phases.svg)](https://www.figma.com/board/1RbIQpZgVRQr2TzsKe2SiZ)
 
 ## Before you start
 
@@ -110,7 +112,7 @@ make validate REQUEST=PE-002-<service>
 
 ---
 
-## Interview talking points
+## What to emphasize
 
 1. **Traceability** — PE-002 threads through every directory
 2. **Separation** — spec reviewer never sees Terraform

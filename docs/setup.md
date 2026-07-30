@@ -1,6 +1,8 @@
 # Setup Guide
 
-Everything in this repository runs locally. No cloud resources are provisioned.
+Everything in this repository runs locally. No cloud resources are provisioned. The Terraform layers below sit on top of a local Kind + Vault runtime:
+
+[![Infrastructure layers](diagrams/05-infrastructure-layers.svg)](https://www.figma.com/board/1RbIQpZgVRQr2TzsKe2SiZ)
 
 ## Prerequisites
 

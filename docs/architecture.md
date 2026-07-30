@@ -1,5 +1,7 @@
 # Architecture
 
+> Diagrams are authored in FigJam. Source board and index: [docs/figma-diagrams.md](figma-diagrams.md).
+
 ## Problem
 
 Regulated platform teams need **traceable, reviewable** infrastructure delivery. Ad-hoc AI code generation bypasses approval gates and produces unauditable changes.
@@ -16,6 +18,18 @@ This repository implements **specification-driven development (SDD)** with expli
 The agent is a **copilot** in the manual workflow — each phase produces a committed artifact that a human approves before the next phase begins.
 
 An optional **autonomous delivery** path (`create-spec` → `implement-change` → `validate-change`) auto-continues through implement and validate with explicit retry loops. See [autonomous-delivery.md](autonomous-delivery.md) and [engineering-decisions/](engineering-decisions/).
+
+## System overview
+
+Cursor sits between the engineer and three systems: the issue tracker (read requests, post updates), the Git repo (write phase artifacts), and the local platform (plan Terraform against a real Vault API).
+
+[![System overview](diagrams/02-system-overview.svg)](https://www.figma.com/board/1RbIQpZgVRQr2TzsKe2SiZ)
+
+## Two delivery paths
+
+Both paths run the same seven phases and produce the same artifacts. They differ only in where humans intervene.
+
+[![Two delivery paths](diagrams/03-two-delivery-paths.svg)](https://www.figma.com/board/1RbIQpZgVRQr2TzsKe2SiZ)
 
 ## Phase model
 
@@ -34,28 +48,17 @@ Reviewers can scope their review to a single phase without reading unrelated art
 
 ## Infrastructure layers
 
-```mermaid
-flowchart TB
-  subgraph local [Local Runtime]
-    kind[Kind Cluster]
-    vault[Vault Dev Mode]
-  end
-
-  subgraph tf [Terraform]
-    platform[terraform/platform]
-    module[modules/vault-service-onboard]
-    request[requests/PE-xxx/03-terraform]
-  end
-
-  kind --> vault
-  platform --> vault
-  request --> module
-  module --> vault
-```
+[![Infrastructure layers](diagrams/05-infrastructure-layers.svg)](https://www.figma.com/board/1RbIQpZgVRQr2TzsKe2SiZ)
 
 - **Platform layer** — applied once; configures Kubernetes auth and KV mount
 - **Module** — reusable `vault-service-onboard` for any service
 - **Request layer** — thin wrapper per ticket with values from approved spec
+
+## End-to-end flow
+
+One request, from ticket to closed loop. The agent orchestrates; humans approve the spec/plan (manual path) and the final merge.
+
+[![End-to-end flow](diagrams/04-end-to-end-flow.svg)](https://www.figma.com/board/1RbIQpZgVRQr2TzsKe2SiZ)
 
 ## Security model
 
@@ -69,7 +72,7 @@ Policies are derived from ticket fields, written into the spec, reviewed in the 
 
 ## Why local-only
 
-Interview and demo environments cannot depend on cloud accounts or enterprise licences. Kind + Vault dev mode provides sufficient fidelity to demonstrate:
+A self-contained environment cannot depend on cloud accounts or enterprise licences. Kind + Vault dev mode provides sufficient fidelity to demonstrate:
 
 - Terraform plan/apply against a real Vault API
 - Kubernetes auth role binding

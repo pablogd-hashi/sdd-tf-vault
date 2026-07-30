@@ -1,0 +1,62 @@
+version: '3'
+
+# Request flow: apply/destroy a single request's Terraform (requests/<id>/03-terraform).
+# Select the request with REQUEST=<id> (default comes from the root Taskfile).
+# All paths are relative to the repository root (the parent include sets dir=ROOT_DIR).
+
+vars:
+  REQUEST: '{{.REQUEST | default "PE-001-payments-api"}}'
+  REQ_DIR: 'requests/{{.REQUEST}}/03-terraform'
+
+tasks:
+  up:
+    desc: "Apply a request's Terraform (REQUEST=<id>)"
+    preconditions:
+      - sh: test -f {{.REQ_DIR}}/main.tf
+        msg: "No Terraform at {{.REQ_DIR}} — set REQUEST=<id> (see: task request:list)"
+    cmds:
+      - task: :platform:ensure-vault
+      - terraform -chdir={{.REQ_DIR}} init -input=false
+      - terraform -chdir={{.REQ_DIR}} apply -auto-approve
+      - task: url
+
+  down:
+    desc: "Destroy a request's Terraform (REQUEST=<id>)"
+    preconditions:
+      - sh: test -f {{.REQ_DIR}}/main.tf
+        msg: "No Terraform at {{.REQ_DIR}} — set REQUEST=<id> (see: task request:list)"
+    cmds:
+      - task: :platform:ensure-vault
+      - terraform -chdir={{.REQ_DIR}} init -input=false
+      - terraform -chdir={{.REQ_DIR}} destroy -auto-approve
+
+  reset:
+    desc: "Destroy then re-apply a request's Terraform (REQUEST=<id>)"
+    cmds:
+      - task: down
+      - task: up
+
+  url:
+    desc: "Print the Vault URL and Terraform outputs for a request (REQUEST=<id>)"
+    silent: true
+    cmds:
+      - |
+        if [ -f .platform-state ]; then . ./.platform-state; fi
+        echo "Vault: ${VAULT_ADDR:-http://127.0.0.1:8200}"
+        if [ -f {{.REQ_DIR}}/terraform.tfstate ]; then
+          echo "Outputs for {{.REQUEST}}:"
+          terraform -chdir={{.REQ_DIR}} output 2>/dev/null || true
+        else
+          echo "(no state yet — run: task request:up REQUEST={{.REQUEST}})"
+        fi
+
+  list:
+    desc: "List requests that have applicable Terraform"
+    silent: true
+    cmds:
+      - |
+        for d in requests/*/; do
+          n="$(basename "$d")"
+          [ "$n" = "_template" ] && continue
+          [ -f "requests/$n/03-terraform/main.tf" ] && echo "$n"
+        done

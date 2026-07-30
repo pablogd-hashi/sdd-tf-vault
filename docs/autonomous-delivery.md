@@ -34,21 +34,7 @@ make validate-change REQUEST=PE-123-payments-api
 
 ## Workflow diagram
 
-```mermaid
-flowchart TD
-  ticket[Ticket jira or linear] --> createSpec[create-spec]
-  createSpec --> spec[01-spec/spec.md]
-  spec --> implement[implement-change]
-  implement --> plan[02-plan/plan.md]
-  implement --> tf[03-terraform/main.tf]
-  tf --> validate[validate-change loop]
-  validate -->|FAIL| fix[Fix issues]
-  fix --> validate
-  validate -->|PASS| ticketUpdate[ticket-update script]
-  ticketUpdate --> reviewer[reviewer subagent]
-  reviewer --> bugbot[bugbot-review]
-  bugbot --> pr[open-github-pr]
-```
+[![Autonomous validation loop](diagrams/06-autonomous-validation-loop.svg)](https://www.figma.com/board/1RbIQpZgVRQr2TzsKe2SiZ)
 
 ## Validation pipeline
 

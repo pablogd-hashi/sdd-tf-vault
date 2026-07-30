@@ -1,0 +1,128 @@
+version: '3'
+
+# Load local overrides if present (VAULT_ADDR, KIND_CLUSTER_NAME, ...).
+dotenv: ['.env']
+
+vars:
+  KIND_CLUSTER_NAME: '{{.KIND_CLUSTER_NAME | default "pe-copilot"}}'
+  VAULT_ADDR: '{{.VAULT_ADDR | default "http://127.0.0.1:8200"}}'
+  VAULT_TOKEN: '{{.VAULT_TOKEN | default "root"}}'
+  VAULT_NAMESPACE: '{{.VAULT_NAMESPACE | default "vault"}}'
+  VAULT_RELEASE: '{{.VAULT_RELEASE | default "vault"}}'
+  REQUEST: '{{.REQUEST | default "PE-001-payments-api"}}'
+
+# Exported to every command (scripts + terraform).
+env:
+  VAULT_ADDR: '{{.VAULT_ADDR}}'
+  VAULT_TOKEN: '{{.VAULT_TOKEN}}'
+  KIND_CLUSTER_NAME: '{{.KIND_CLUSTER_NAME}}'
+  VAULT_NAMESPACE: '{{.VAULT_NAMESPACE}}'
+  VAULT_RELEASE: '{{.VAULT_RELEASE}}'
+  TF_VAR_vault_addr: '{{.VAULT_ADDR}}'
+  TF_VAR_vault_token: '{{.VAULT_TOKEN}}'
+  TF_VAR_kubeconfig_context: 'kind-{{.KIND_CLUSTER_NAME}}'
+
+includes:
+  platform:
+    taskfile: ./taskfiles/platform.yml
+    dir: '{{.ROOT_DIR}}'
+  request:
+    taskfile: ./taskfiles/request.yml
+    dir: '{{.ROOT_DIR}}'
+
+tasks:
+  default:
+    cmds:
+      - task: help
+
+  help:
+    desc: "List flows and commands"
+    silent: true
+    cmds:
+      - |
+        echo "Platform Engineering Copilot — task runner"
+        echo ""
+        echo "Flows (each supports: up | down | reset | url):"
+        echo "  platform   Kind cluster + Vault (dev) + Kubernetes auth"
+        echo "  request    Per-request Terraform (REQUEST=<id>)"
+        echo ""
+        echo "Platform flow:"
+        echo "  task platform:up       Create cluster, install Vault, apply K8s auth"
+        echo "  task platform:down     Destroy platform TF and delete the cluster"
+        echo "  task platform:reset    Tear down and bring back up"
+        echo "  task platform:url      Print the Vault URL"
+        echo "  task platform:status   Show Vault health"
+        echo ""
+        echo "Request flow (default REQUEST={{.REQUEST}}):"
+        echo "  task request:up REQUEST=<id>     Apply the request's Terraform"
+        echo "  task request:down REQUEST=<id>   Destroy the request's Terraform"
+        echo "  task request:reset REQUEST=<id>  Destroy then re-apply"
+        echo "  task request:url REQUEST=<id>    Print Vault URL + outputs"
+        echo "  task request:list                List available requests"
+        echo ""
+        echo "Top-level shortcuts (operate on the platform flow):"
+        echo "  task up | task down | task reset | task url"
+        echo ""
+        echo "Validation & tests:"
+        echo "  task validate REQUEST=<id>         Legacy validation pipeline"
+        echo "  task validate-change REQUEST=<id>  Extended validation pipeline"
+        echo "  task validate-all                  Validate every request"
+        echo "  task test                          Terratest"
+        echo "  task test-local                    Terratest against local Vault"
+        echo "  task check-phase REQUEST=<id>      Phase-order gate check"
+
+  up:
+    desc: "Shortcut for platform:up"
+    cmds:
+      - task: platform:up
+
+  down:
+    desc: "Shortcut for platform:down"
+    cmds:
+      - task: platform:down
+
+  reset:
+    desc: "Shortcut for platform:reset"
+    cmds:
+      - task: platform:reset
+
+  url:
+    desc: "Shortcut for platform:url"
+    cmds:
+      - task: platform:url
+
+  validate:
+    desc: "Legacy validation pipeline for a request (REQUEST=<id>)"
+    cmds:
+      - cmd: scripts/ensure-vault-ready.sh
+        ignore_error: true
+      - scripts/validate-request.sh {{.REQUEST}}
+
+  validate-change:
+    desc: "Extended validation pipeline for a request (REQUEST=<id>)"
+    cmds:
+      - chmod +x scripts/validate-change.sh scripts/ticket-update-on-validation.sh
+      - cmd: scripts/ensure-vault-ready.sh
+        ignore_error: true
+      - scripts/validate-change.sh {{.REQUEST}}
+
+  validate-all:
+    desc: "Validate every request (legacy pipeline)"
+    cmds:
+      - scripts/validate-all.sh
+
+  test:
+    desc: "Run Terratest (skips if Vault unavailable)"
+    cmds:
+      - cd tests && go test -v -timeout 10m ./...
+
+  test-local:
+    desc: "Run Terratest against local Vault"
+    cmds:
+      - task: platform:ensure-vault
+      - cd tests && go test -v -count=1 -timeout 10m ./...
+
+  check-phase:
+    desc: "Check phase-order gates for a request (REQUEST=<id>)"
+    cmds:
+      - scripts/check-phase-order.sh {{.REQUEST}}

@@ -6,15 +6,24 @@ This repository demonstrates a **specification-driven workflow** that converts a
 
 ## Workflow
 
-```
-Ticket → Specification → Implementation Plan → Terraform → Validation → Review → GitHub PR → Ticket Update
-```
+An infrastructure request moves through seven numbered phases. Each phase writes one artifact, and each artifact is reviewable on its own.
+
+[![Seven-phase SDD workflow](docs/diagrams/01-workflow-phases.svg)](https://www.figma.com/board/1RbIQpZgVRQr2TzsKe2SiZ)
 
 Each phase lives in its own directory under `requests/<ticket-id>/`, so reviewers can approve specs without reading Terraform, and platform engineers can audit validation evidence without opening the ticket tracker.
 
-### Autonomous delivery (optional)
+Diagrams are authored in FigJam — see the [source board](https://www.figma.com/board/1RbIQpZgVRQr2TzsKe2SiZ) and [docs/figma-diagrams.md](docs/figma-diagrams.md).
 
-An extended path reduces mid-phase handoffs while preserving auditable artifacts. See [docs/autonomous-delivery.md](docs/autonomous-delivery.md).
+### Two delivery paths
+
+The same phases run in one of two modes:
+
+| Path | Entry skill | Human gates |
+|------|-------------|-------------|
+| **Manual** (default) | `ticket-to-spec` | Stop for approval after each phase |
+| **Autonomous** (optional) | `create-spec` | Implement + validate loop runs unattended; PR merge still needs a human |
+
+The autonomous path adds a validation retry loop and a readonly reviewer subagent while keeping the same artifacts. See [docs/autonomous-delivery.md](docs/autonomous-delivery.md).
 
 ```
 create-spec → implement-change → validate-change (loop) → ticket update → reviewer → bugbot → PR
@@ -74,6 +83,7 @@ terraform/         Platform bootstrap + reusable vault-service-onboard module
 platform/          Kind cluster config + Helm values + bootstrap scripts
 .cursor/           Rules and Skills that encode the workflow gates
 docs/              Setup guide, demo script, architecture, autonomous delivery, ADRs
+docs/diagrams/     FigJam-authored SVG diagrams (see docs/figma-diagrams.md)
 policies/          Conftest Rego policies for plan validation
 .cursor/agents/    Custom subagents (reviewer)
 .cursor/BUGBOT.md  Bugbot PR review rules
@@ -94,7 +104,7 @@ tests/             Terratest integration tests
 
 Skills are **explicitly invoked** — the agent does not autonomously skip gates in the manual workflow. The autonomous path (`create-spec` → `implement-change` → `validate-change`) runs explicit loops documented in [docs/autonomous-delivery.md](docs/autonomous-delivery.md).
 
-## What this teaches (interview talking points)
+## Design principles
 
 1. **Traceability** — Ticket ID (and provider) threads through every artifact directory
 2. **Separation of concerns** — Spec, plan, code, validation, and review are distinct review surfaces

@@ -1,0 +1,65 @@
+version: '3'
+
+# Platform flow: local Kind cluster + Vault (dev mode) + Kubernetes auth backend.
+# All paths are relative to the repository root (the parent include sets dir=ROOT_DIR).
+
+tasks:
+  up:
+    desc: "Bring up the platform: Kind cluster + Vault (dev) + Kubernetes auth"
+    cmds:
+      - task: bootstrap
+      - task: apply
+      - task: url
+
+  down:
+    desc: "Destroy platform Terraform and delete the Kind cluster"
+    cmds:
+      - cmd: terraform -chdir=terraform/platform destroy -auto-approve
+        ignore_error: true
+      - platform/scripts/teardown.sh
+      - rm -f .terraform-platform.tfstate .terraform-platform.tfstate.backup
+
+  reset:
+    desc: "Tear the platform down and bring it back up"
+    cmds:
+      - task: down
+      - task: up
+
+  url:
+    desc: "Print the Vault URL for the platform"
+    silent: true
+    cmds:
+      - |
+        if [ -f .platform-state ]; then . ./.platform-state; fi
+        echo "${VAULT_ADDR:-http://127.0.0.1:8200}"
+
+  status:
+    desc: "Show whether Vault is reachable"
+    silent: true
+    cmds:
+      - |
+        if [ -f .platform-state ]; then . ./.platform-state; fi
+        ADDR="${VAULT_ADDR:-http://127.0.0.1:8200}"
+        if curl -sf "${ADDR}/v1/sys/health" >/dev/null 2>&1; then
+          echo "Vault reachable at ${ADDR}"
+        else
+          echo "Vault NOT reachable at ${ADDR} (run: task platform:up)"
+          exit 1
+        fi
+
+  bootstrap:
+    desc: "Create Kind cluster, install Vault (dev), start port-forward"
+    cmds:
+      - chmod +x platform/scripts/bootstrap.sh platform/scripts/teardown.sh scripts/*.sh
+      - platform/scripts/bootstrap.sh
+
+  apply:
+    desc: "Apply platform Terraform (enable Kubernetes auth backend)"
+    cmds:
+      - terraform -chdir=terraform/platform init -input=false
+      - terraform -chdir=terraform/platform apply -auto-approve
+
+  ensure-vault:
+    desc: "Ensure the Vault port-forward is running"
+    cmds:
+      - scripts/ensure-vault-ready.sh
