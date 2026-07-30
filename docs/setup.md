@@ -14,6 +14,7 @@ Everything in this repository runs locally. No cloud resources are provisioned. 
 | Helm | 3.14+ | `brew install helm` |
 | Terraform | 1.5+ | `brew install terraform` |
 | Go | 1.21+ | `brew install go` |
+| Task | 3.x | `brew install go-task` |
 | tflint | 0.50+ | `brew install tflint` (optional) |
 | Vault CLI | 1.15+ | `brew install vault` (optional) |
 
@@ -29,15 +30,23 @@ Never commit `.env`. Vault credentials for dev mode are documented in bootstrap 
 ## Bootstrap local platform
 
 ```bash
-make bootstrap
+task platform:up
 ```
 
-This will:
+This runs three steps in sequence:
 
-1. Create a Kind cluster named `pe-copilot`
-2. Install Vault in dev mode via Helm
-3. Port-forward Vault to `http://127.0.0.1:8200`
-4. Create a service account token secret for Kubernetes auth
+1. Create a Kind cluster named `pe-copilot`, install Vault in dev mode via Helm, and start a port-forward to `http://127.0.0.1:8200`
+2. Apply platform Terraform — enables Kubernetes auth backend at `auth/kubernetes` and KV v2 mount at `secret/`
+3. Print the Vault URL
+
+You can also run the steps individually:
+
+```bash
+task platform:bootstrap   # cluster + Vault + port-forward only
+task platform:apply       # Terraform only
+task platform:url         # print URL
+task platform:status      # check Vault health
+```
 
 Verify:
 
@@ -46,23 +55,12 @@ kubectl get pods -n vault --context kind-pe-copilot
 curl -s http://127.0.0.1:8200/v1/sys/health | jq .
 ```
 
-## Apply platform Terraform
-
-```bash
-make platform-apply
-```
-
-This configures:
-
-- Kubernetes auth backend at `auth/kubernetes`
-- KV v2 mount at `secret/`
-
-Outputs are written to Terraform state at `.terraform-platform.tfstate`.
+Terraform state is written to `.terraform-platform.tfstate`.
 
 ## Run tests
 
 ```bash
-make test-local
+task test-local
 ```
 
 Terratest applies the `vault-service-onboard` module against local Vault and verifies policy and auth role creation.
@@ -99,15 +97,22 @@ cp .cursor/mcp.json.example .cursor/mcp.json
 ## Validate a request
 
 ```bash
-make validate REQUEST=PE-001-payments-api
+task validate REQUEST=PE-001-payments-api
+task validate-change REQUEST=PE-001-payments-api   # extended pipeline
 ```
 
-If Vault is not reachable, run `./scripts/ensure-vault-ready.sh` or `make bootstrap` first.
+If Vault is not reachable, run `task platform:up` first.
 
 ## Teardown
 
 ```bash
-make teardown
+task platform:down
 ```
 
-This stops the port-forward and deletes the Kind cluster.
+This destroys platform Terraform and deletes the Kind cluster. To start fresh:
+
+```bash
+task platform:reset   # down + up in one command
+```
+
+> The original `make` targets still work (`make bootstrap`, `make platform-apply`, `make validate ...`); `task` is the recommended interface.

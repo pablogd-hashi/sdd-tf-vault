@@ -55,23 +55,45 @@ No cloud resources are provisioned. No enterprise licences required.
 ### Prerequisites
 
 - Docker, Kind, kubectl, Helm, Terraform ≥ 1.5, Go ≥ 1.21
+- [go-task](https://taskfile.dev/installation/) (`brew install go-task`) — task runner for the flows below
 - Optional: [Vault CLI](https://developer.hashicorp.com/vault/install), [tflint](https://github.com/terraform-linters/tflint)
+
+### Task runner ([go-task](https://taskfile.dev))
+
+Every stack is modelled as a **flow** that supports `up`, `down`, `reset`, and `url`:
+
+| Flow | What it manages | Commands |
+|------|-----------------|----------|
+| `platform` | Kind cluster + Vault (dev) + Kubernetes auth | `task platform:up` · `platform:down` · `platform:reset` · `platform:url` |
+| `request`  | A request's Terraform (`REQUEST=<id>`) | `task request:up REQUEST=<id>` · `request:down` · `request:reset` · `request:url` |
+
+Run `task` (or `task help`) to see everything. Top-level `task up`/`down`/`reset`/`url` are shortcuts for the `platform` flow.
 
 ### Bootstrap local platform
 
 ```bash
 cp .env.example .env
-make bootstrap        # Kind + Vault dev + port-forward
-make platform-apply   # Terraform: enable Kubernetes auth
-make test-local       # Terratest against local Vault
+task platform:up      # Kind + Vault dev + port-forward + Kubernetes auth
+task platform:url     # print the Vault URL
+task test-local       # Terratest against local Vault
+```
+
+### Provision a request and read its URL/outputs
+
+```bash
+task request:up REQUEST=PE-001-payments-api    # apply the request's Terraform
+task request:url REQUEST=PE-001-payments-api   # Vault URL + policy/role/secret paths
+task request:down REQUEST=PE-001-payments-api  # tear it back down
 ```
 
 ### Run validation on the golden example
 
 ```bash
-make validate REQUEST=PE-001-payments-api
-make validate-change REQUEST=PE-001-payments-api   # extended pipeline
+task validate REQUEST=PE-001-payments-api
+task validate-change REQUEST=PE-001-payments-api   # extended pipeline
 ```
+
+> The original `make` targets still work (`make bootstrap`, `make platform-apply`, `make validate ...`); the Taskfile is the recommended interface.
 
 See [docs/setup.md](docs/setup.md) for full setup including MCP configuration.
 

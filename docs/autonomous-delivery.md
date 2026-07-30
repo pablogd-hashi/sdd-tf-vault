@@ -28,7 +28,7 @@ git checkout -b pe/PE-123-payments-api
 Or run validation manually:
 
 ```bash
-make validate-change REQUEST=PE-123-payments-api
+task validate-change REQUEST=PE-123-payments-api
 ./scripts/ticket-update-on-validation.sh PE-123-payments-api
 ```
 
@@ -38,7 +38,7 @@ make validate-change REQUEST=PE-123-payments-api
 
 ## Validation pipeline
 
-`make validate-change REQUEST=<id>` runs checks in order:
+`task validate-change REQUEST=<id>` runs checks in order:
 
 | Step | Tool | Required |
 |------|------|----------|
