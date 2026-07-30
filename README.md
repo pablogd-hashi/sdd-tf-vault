@@ -1,6 +1,6 @@
 # Platform Engineering Copilot
 
-An open-source reference implementation showing how **Cursor** improves software delivery in regulated platform engineering teams.
+An open-source reference implementation showing how to implement software delivery in regulated platform engineering teams.
 
 This repository demonstrates a **specification-driven workflow** that converts approved infrastructure tickets (Jira or Linear) into production-ready Terraform — with every phase independently reviewable.
 
