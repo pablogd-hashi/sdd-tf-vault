@@ -112,9 +112,3 @@ The `notify-slack` skill can be combined with any phase. Three scenarios:
 
 See [docs/setup.md](../docs/setup.md#slack-optional) for Slack app setup and [`.cursor/skills/notify-slack/SKILL.md`](../../.cursor/skills/notify-slack/SKILL.md) for the full scenario reference.
 
-## Backward compatibility
-
-- `task validate` / `make validate` — legacy pipeline (both work)
-- Manual skills (`ticket-to-spec`, `spec-to-plan`, etc.) — provider-agnostic
-- Golden example `PE-001-payments-api` — validates with legacy pipeline
-- Phase directory `07-ticket-update/` — renamed from `07-jira-update/` (ADR-006)
