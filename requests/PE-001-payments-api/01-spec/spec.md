@@ -2,7 +2,8 @@
 
 | Field | Value |
 |-------|-------|
-| **Jira ticket** | PE-001 |
+| **Ticket** | PE-001 |
+| **Ticket provider** | jira |
 | **Status** | Approved |
 | **Author** | payments-team |
 | **Date** | 2026-07-28 |
@@ -13,7 +14,7 @@ The `payments-api` microservice is being deployed to the local Kind cluster for 
 
 ## Requirements
 
-| # | Requirement | Source (Jira field) |
+| # | Requirement | Source (ticket field) |
 |---|-------------|---------------------|
 | R1 | Service name: `payments-api` | Service name |
 | R2 | Team: `payments` | Team |

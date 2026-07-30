@@ -2,7 +2,8 @@
 
 | Field | Value |
 |-------|-------|
-| **Jira ticket** | PE-9 |
+| **Ticket** | PE-9 |
+| **Ticket provider** | jira |
 | **Status** | Draft |
 | **Author** | Pablo D |
 | **Date** | 2026-07-28 |
@@ -15,7 +16,7 @@ Environment: local
 
 ## Requirements
 
-| # | Requirement | Source (Jira field) |
+| # | Requirement | Source (ticket field) |
 |---|-------------|---------------------|
 | R1 | Service name: `payments-api` | Service name |
 | R2 | Team: `payments` | Team |

@@ -2,7 +2,7 @@
 
 | Field | Value |
 |-------|-------|
-| **Jira ticket** | PE-001 |
+| **Ticket** | PE-001 |
 | **Branch** | pe/PE-001-payments-api |
 | **Reviewed at** | 2026-07-28 |
 

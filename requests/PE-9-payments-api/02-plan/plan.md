@@ -2,7 +2,7 @@
 
 | Field | Value |
 |-------|-------|
-| **Jira ticket** | PE-9 |
+| **Ticket** | PE-9 |
 | **Spec reference** | `01-spec/spec.md` |
 | **Status** | Draft |
 | **Author** | platform-engineer |

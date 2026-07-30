@@ -2,7 +2,7 @@
 
 | Field | Value |
 |-------|-------|
-| **Jira ticket** | PE-9 |
+| **Ticket** | PE-9 |
 | **Branch** | pe/PE-9-payments-api |
 | **Reviewed at** | 2026-07-28 |
 

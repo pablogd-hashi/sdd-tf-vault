@@ -54,7 +54,8 @@ Vault service onboarding for `<service-name>` per approved spec PE-XXX.
 
 ```json
 {
-  "jira_ticket": "PE-XXX",
+  "ticket_id": "PE-XXX",
+  "ticket_provider": "jira",
   "branch": "pe/PE-XXX-<service>",
   "pr_url": "<url from GitHub MCP>",
   "commit_sha": "<sha>",
@@ -62,4 +63,6 @@ Vault service onboarding for `<service-name>` per approved spec PE-XXX.
 }
 ```
 
-6. **Stop** — ask user to review PR before Jira update
+Use `ticket_provider` from the spec header / `autonomous.json` (`jira` | `linear`).
+
+6. **Stop** — ask user to review PR before ticket update (`ticket-update` skill)

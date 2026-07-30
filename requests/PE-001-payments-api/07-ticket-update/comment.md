@@ -1,6 +1,7 @@
 ## Platform Engineering — Vault onboarding complete
 
-**Jira:** PE-001
+**Ticket:** PE-001
+**Ticket provider:** jira
 **PR:** https://github.com/example/sdd-tf-vault-cursor/pull/1
 **Validation:** PASS
 

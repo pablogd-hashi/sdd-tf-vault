@@ -9,22 +9,22 @@ cp .env.example .env
 make bootstrap
 make platform-apply
 cp .cursor/mcp.json.example .cursor/mcp.json
-# Authenticate Atlassian + GitHub MCP in Cursor
+# Authenticate Atlassian (or Linear) + GitHub MCP in Cursor
 ```
 
 Golden example (pre-built): `requests/PE-001-payments-api/`
 
-Live demo ticket: create **PE-002** in Jira (see [jira-project-setup.md](jira-project-setup.md))
+Live demo ticket: create **PE-002** in Jira (see [jira-project-setup.md](jira-project-setup.md)) or Linear (see [linear-project-setup.md](linear-project-setup.md))
 
 ---
 
-## Phase 1 — Jira to Spec (2 min)
+## Phase 1 — Ticket to Spec (2 min)
 
 **Prompt:**
 
-> Use the jira-to-spec skill to read Jira ticket PE-002 and create the specification.
+> Use the ticket-to-spec skill to read ticket PE-002 (provider jira) and create the specification.
 
-**Show:** `requests/PE-002-*/01-spec/spec.md` — requirements mapped to Jira fields, sign-off table.
+**Show:** `requests/PE-002-*/01-spec/spec.md` — requirements mapped to ticket fields, sign-off table.
 
 **Say:** "Spec is independently reviewable. Platform lead approves before any Terraform exists."
 
@@ -98,13 +98,13 @@ make validate REQUEST=PE-002-<service>
 
 ---
 
-## Phase 7 — Jira Update (1 min)
+## Phase 7 — Ticket Update (1 min)
 
 **Prompt:**
 
-> Use the jira-update skill for PE-002.
+> Use the ticket-update skill for PE-002.
 
-**Show:** Jira comment with PR link. `07-jira-update/comment.md`.
+**Show:** Ticket comment with PR link. `07-ticket-update/comment.md`.
 
 **Say:** "Traceability loop closed — ticket updated with evidence."
 

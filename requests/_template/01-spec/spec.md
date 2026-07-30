@@ -2,7 +2,8 @@
 
 | Field | Value |
 |-------|-------|
-| **Jira ticket** | PE-XXX |
+| **Ticket** | PE-XXX |
+| **Ticket provider** | jira |
 | **Status** | Draft |
 | **Author** | |
 | **Date** | |
@@ -13,7 +14,7 @@
 
 ## Requirements
 
-| # | Requirement | Source (Jira field) |
+| # | Requirement | Source (ticket field) |
 |---|-------------|---------------------|
 | R1 | | Service name |
 | R2 | | Team |

@@ -1,0 +1,41 @@
+---
+description: Required ticket fields for infrastructure requests (Jira or Linear)
+alwaysApply: false
+---
+
+# Ticket Schema
+
+Provider-agnostic schema for infrastructure requests. Supported providers: **jira** | **linear**.
+
+Team/project key: **PE** (Platform Engineering) by default (`JIRA_PROJECT_KEY` / `LINEAR_TEAM_KEY`).
+
+## Required fields
+
+| Field | Format | Example |
+|-------|--------|---------|
+| Summary / Title | `{action} {service} to Vault` | Onboard payments-api to Vault |
+| Service name | kebab-case | payments-api |
+| Team | lowercase | payments |
+| Environment | local/staging/prod | local |
+| K8s namespace | lowercase | payments |
+| K8s service account | matches service or dedicated SA | payments-api |
+| Secret paths | comma-separated | config, db |
+| Approver | username | platform-lead |
+| Acceptance criteria | free text | Service can read config and db secrets |
+
+## Where fields live (per provider)
+
+### Jira
+
+- Prefer custom fields on issue type **Infrastructure Request** (or Task with labels).
+- Jira Free workaround: use labels `service:payments-api`, `team:payments`, `namespace:payments`, `sa:payments-api`, `secrets:config,db`.
+
+### Linear
+
+- Put structured fields in the issue **description** as a markdown table or bullet list with the field names above.
+- Also apply labels: `service:payments-api`, `team:payments`, `namespace:payments`, `sa:payments-api`, `secrets:config,db`.
+- Issue type / label: `infrastructure-request` (optional but recommended).
+
+## Rejection criteria
+
+Reject tickets missing service name, team, namespace, service account, or secret paths. Ask requester to update before writing spec.

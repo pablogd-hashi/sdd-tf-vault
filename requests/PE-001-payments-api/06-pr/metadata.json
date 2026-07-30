@@ -1,5 +1,6 @@
 {
-  "jira_ticket": "PE-001",
+  "ticket_id": "PE-001",
+  "ticket_provider": "jira",
   "branch": "pe/PE-001-payments-api",
   "pr_url": "https://github.com/example/sdd-tf-vault-cursor/pull/1",
   "commit_sha": "example",

@@ -8,17 +8,17 @@ alwaysApply: false
 
 Every spec in `requests/*/01-spec/spec.md` must include:
 
-1. **Header table** — Jira ticket, status, author, date
+1. **Header table** — Ticket ID, ticket provider (`jira` | `linear`), status, author, date
 2. **Context** — why the request exists
-3. **Requirements table** — numbered requirements mapped to Jira fields
+3. **Requirements table** — numbered requirements mapped to ticket fields
 4. **Non-goals** — explicit scope boundaries
 5. **Verification** — checklist of acceptance criteria
 6. **Sign-off table** — requester and platform lead approval
 
-## Required Jira field mapping
+## Required ticket field mapping
 
-| Jira field | Requirement |
-|------------|-------------|
+| Ticket field | Requirement |
+|--------------|-------------|
 | Service name | R1 |
 | Team | R2 |
 | K8s namespace | R3 |

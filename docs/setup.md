@@ -19,7 +19,7 @@ Everything in this repository runs locally. No cloud resources are provisioned.
 
 ```bash
 cp .env.example .env
-# Edit .env with your Jira site and GitHub owner
+# Edit .env with TICKET_PROVIDER (jira|linear), provider credentials, and GitHub owner
 ```
 
 Never commit `.env`. Vault credentials for dev mode are documented in bootstrap output (`root` token).
@@ -79,6 +79,14 @@ cp .cursor/mcp.json.example .cursor/mcp.json
 2. Ensure the Atlassian server is configured with URL `https://mcp.atlassian.com/v1/mcp/authv2`
 3. Complete OAuth when prompted
 4. See [jira-project-setup.md](jira-project-setup.md) for project configuration
+
+### Linear
+
+1. Open Cursor → Settings → MCP
+2. Ensure the Linear server is configured (see `.cursor/mcp.json.example`)
+3. Complete OAuth when prompted
+4. See [linear-project-setup.md](linear-project-setup.md) for team/issue configuration
+5. Set `TICKET_PROVIDER=linear` in `.env` when Linear is the default intake
 
 ### GitHub
 

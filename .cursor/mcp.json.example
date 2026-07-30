@@ -3,6 +3,9 @@
     "atlassian": {
       "url": "https://mcp.atlassian.com/v1/mcp/authv2"
     },
+    "linear": {
+      "url": "https://mcp.linear.app/mcp"
+    },
     "github": {
       "command": "docker",
       "args": [

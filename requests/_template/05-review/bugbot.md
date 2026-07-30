@@ -2,7 +2,7 @@
 
 | Field | Value |
 |-------|-------|
-| **Jira ticket** | PE-XXX |
+| **Ticket** | PE-XXX |
 | **Branch** | |
 | **Reviewed at** | |
 

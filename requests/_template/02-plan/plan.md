@@ -2,7 +2,7 @@
 
 | Field | Value |
 |-------|-------|
-| **Jira ticket** | PE-XXX |
+| **Ticket** | PE-XXX |
 | **Spec reference** | `01-spec/spec.md` |
 | **Status** | Draft |
 | **Author** | |

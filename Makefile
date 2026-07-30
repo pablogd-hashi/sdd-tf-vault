@@ -1,4 +1,4 @@
-.PHONY: bootstrap teardown platform-init platform-apply platform-destroy validate validate-all test test-local check-phase demo help
+.PHONY: bootstrap teardown platform-init platform-apply platform-destroy validate validate-change validate-all test test-local check-phase demo help
 
 ROOT_DIR := $(shell pwd)
 REQUEST ?= PE-001-payments-api
@@ -12,8 +12,9 @@ help:
 	@echo "  make platform-init      Terraform init for platform layer"
 	@echo "  make platform-apply     Apply platform Terraform (K8s auth)"
 	@echo "  make platform-destroy   Destroy platform Terraform"
-	@echo "  make validate REQUEST=  Validate a request (fmt, validate, plan)"
-	@echo "  make validate-all       Validate all requests"
+	@echo "  make validate REQUEST=         Validate a request (legacy: fmt, validate, plan)"
+	@echo "  make validate-change REQUEST=  Extended validation (fmt, validate, test, conftest, trivy)"
+	@echo "  make validate-all              Validate all requests (legacy pipeline)"
 	@echo "  make test               Run Terratest (skips if Vault unavailable)"
 	@echo "  make test-local         Run Terratest against local Vault"
 	@echo "  make check-phase REQUEST=  Check phase order gates"
@@ -38,6 +39,11 @@ platform-destroy:
 validate:
 	./scripts/ensure-vault-ready.sh || true
 	./scripts/validate-request.sh $(REQUEST)
+
+validate-change:
+	chmod +x scripts/validate-change.sh scripts/ticket-update-on-validation.sh
+	./scripts/ensure-vault-ready.sh || true
+	./scripts/validate-change.sh $(REQUEST)
 
 validate-all:
 	./scripts/validate-all.sh

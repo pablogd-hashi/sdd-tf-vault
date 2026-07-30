@@ -1,5 +1,6 @@
 {
-  "jira_ticket": "PE-XXX",
+  "ticket_id": "PE-XXX",
+  "ticket_provider": "jira",
   "branch": "",
   "pr_url": "",
   "commit_sha": "",

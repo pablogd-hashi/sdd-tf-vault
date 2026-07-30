@@ -1,6 +1,7 @@
 ## Platform Engineering — Vault onboarding complete
 
-**Jira:** PE-XXX
+**Ticket:** PE-XXX
+**Ticket provider:** jira
 **PR:** (link)
 **Validation:** PASS
 

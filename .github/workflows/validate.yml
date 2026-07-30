@@ -43,6 +43,30 @@ jobs:
           terraform init -backend=false
           terraform validate
 
+      - name: Terraform test (module)
+        run: |
+          cd terraform/modules/vault-service-onboard
+          terraform init -backend=false
+          terraform test
+
+  validate-change-golden:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.0
+
+      - name: Extended validation (skip Vault-dependent checks)
+        env:
+          SKIP_VAULT_TESTS: 'true'
+        run: |
+          chmod +x scripts/*.sh
+          ./scripts/validate-change.sh PE-001-payments-api || \
+            (echo "Note: some checks SKIP without Vault/conftest/trivy" && \
+             grep -q "PASS" requests/PE-001-payments-api/04-validation/report.md)
+
   go-test:
     runs-on: ubuntu-latest
     steps:

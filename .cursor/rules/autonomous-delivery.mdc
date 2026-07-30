@@ -1,0 +1,52 @@
+---
+description: Autonomous delivery workflow — parallel path to manual gated workflow
+alwaysApply: false
+---
+
+# Autonomous Delivery
+
+This rule defines the **autonomous delivery** path. It extends — does not replace — the manual workflow in `workflow-gates.mdc`.
+
+## Two workflow paths
+
+| Path | Entry skill | Human gates |
+|------|-------------|-------------|
+| **Manual (default)** | `ticket-to-spec` | Stop after each phase for approval |
+| **Autonomous** | `create-spec` | No mid-phase stops; reviewer + PR still require human action |
+
+## Autonomous phase order
+
+1. `create-spec` → `01-spec/spec.md` + `01-spec/autonomous.json`
+2. `implement-change` → `02-plan/plan.md` + `03-terraform/main.tf`
+3. `validate-change` → loop until `04-validation/report.md` PASS
+4. Ticket update → `07-ticket-update/comment.md` (automatic after validation PASS; provider from `autonomous.json`)
+5. `reviewer` subagent → `05-review/reviewer.md` (readonly, isolated context)
+6. `bugbot-review` → `05-review/bugbot.md` (before PR, unchanged)
+7. `open-github-pr` → `06-pr/metadata.json` (human approval to merge)
+
+## Validation loop
+
+```
+implement-change
+    ↓
+make validate-change REQUEST=<id>
+    ↓
+on FAIL → fix → repeat
+    ↓
+on PASS → ticket-update-on-validation.sh → reviewer subagent
+```
+
+Checks (in order): `terraform fmt` → `terraform validate` → `terraform test` → Terratest → `conftest` → `trivy` → `tflint` → `terraform plan`
+
+## Rules
+
+- Autonomous mode requires `01-spec/autonomous.json` marker file (`ticket_id`, `ticket_provider`)
+- Never skip validation or reviewer phases
+- Reviewer subagent is **readonly** — evaluation only
+- Legacy `make validate` remains unchanged for manual workflow
+- Document decisions in `docs/engineering-decisions/`
+
+## Approval signal (autonomous)
+
+Proceed through implement and validate loops without stopping.
+Stop before PR merge and ask human to review `05-review/reviewer.md` and `05-review/bugbot.md`.

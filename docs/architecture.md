@@ -10,10 +10,12 @@ This repository implements **specification-driven development (SDD)** with expli
 
 - **Rules** — enforce process (phase order, formats, conventions)
 - **Skills** — deterministic procedures for each workflow step
-- **MCP** — read Jira tickets, open GitHub PRs
+- **MCP** — read tickets (Jira or Linear), open GitHub PRs
 - **Bugbot** — mandatory automated review before merge
 
-The agent is a **copilot**, not an autonomous operator. Each phase produces a committed artifact that a human approves before the next phase begins.
+The agent is a **copilot** in the manual workflow — each phase produces a committed artifact that a human approves before the next phase begins.
+
+An optional **autonomous delivery** path (`create-spec` → `implement-change` → `validate-change`) auto-continues through implement and validate with explicit retry loops. See [autonomous-delivery.md](autonomous-delivery.md) and [engineering-decisions/](engineering-decisions/).
 
 ## Phase model
 
@@ -25,7 +27,7 @@ requests/PE-123/
 ├── 04-validation/    SRE/evidence review
 ├── 05-review/        Bugbot findings
 ├── 06-pr/            Delivery metadata
-└── 07-jira-update/   Traceability back to ticket
+└── 07-ticket-update/ Traceability back to ticket
 ```
 
 Reviewers can scope their review to a single phase without reading unrelated artifacts.
@@ -53,7 +55,7 @@ flowchart TB
 
 - **Platform layer** — applied once; configures Kubernetes auth and KV mount
 - **Module** — reusable `vault-service-onboard` for any service
-- **Request layer** — thin wrapper per Jira ticket with values from approved spec
+- **Request layer** — thin wrapper per ticket with values from approved spec
 
 ## Security model
 
@@ -63,7 +65,7 @@ Each service receives:
 2. **Kubernetes auth role** — bound to `{namespace}/{service_account}`
 3. **KV paths** — scaffolded under team prefix
 
-Policies are derived from Jira ticket fields, written into the spec, reviewed in the plan, and copied verbatim into Terraform. No path invention by the agent.
+Policies are derived from ticket fields, written into the spec, reviewed in the plan, and copied verbatim into Terraform. No path invention by the agent.
 
 ## Why local-only
 
@@ -83,5 +85,6 @@ Production deployment would use the same modules with environment-specific tfvar
 | `02-plan/plan.md` | How will it be implemented? |
 | `04-validation/report.md` | Did `terraform plan` succeed? |
 | `05-review/bugbot.md` | Were code issues identified? |
+| `05-review/reviewer.md` | Did readonly reviewer confirm spec/plan/terraform alignment? (autonomous) |
 | `06-pr/metadata.json` | Where is the change under review? |
-| `07-jira-update/comment.md` | Was the requester notified? |
+| `07-ticket-update/comment.md` | Was the requester notified? |
