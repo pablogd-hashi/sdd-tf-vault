@@ -12,7 +12,6 @@ An infrastructure request moves through seven numbered phases. Each phase writes
 
 Each phase lives in its own directory under `requests/<ticket-id>/`, so reviewers can approve specs without reading Terraform, and platform engineers can audit validation evidence without opening the ticket tracker.
 
-Diagrams are authored in FigJam — see the [source board](https://www.figma.com/board/1RbIQpZgVRQr2TzsKe2SiZ) and [docs/figma-diagrams.md](docs/figma-diagrams.md).
 
 ### Two delivery paths
 
