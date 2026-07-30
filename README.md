@@ -46,6 +46,7 @@ For each approved **Vault service onboarding** request, the copilot produces:
 | [Terraform OSS](https://www.terraform.io/) | Infrastructure as code |
 | [Jira Free](https://www.atlassian.com/software/jira/free) or [Linear](https://linear.app/) | Infrastructure request intake |
 | [GitHub Free](https://github.com/) | Pull request delivery |
+| [Slack](https://slack.com/) | Workflow notifications and ticket confirmations (optional) |
 | [Cursor](https://cursor.com/) | Rules, Skills, MCP, Bugbot |
 
 No cloud resources are provisioned. No enterprise licences required.
@@ -122,6 +123,7 @@ tests/             Terratest integration tests
 | **Jira MCP** (Atlassian) | Read Jira tickets, post completion comments |
 | **Linear MCP** | Read Linear issues, post completion comments |
 | **GitHub MCP** | Create branches and pull requests |
+| **Slack MCP** | Post workflow notifications, query pending tickets, confirm ticket creation |
 | **Bugbot** | Mandatory code review subagent before PR merge (see `.cursor/BUGBOT.md`) |
 
 Skills are **explicitly invoked** — the agent does not autonomously skip gates in the manual workflow. The autonomous path (`create-spec` → `implement-change` → `validate-change`) runs explicit loops documented in [docs/autonomous-delivery.md](docs/autonomous-delivery.md).

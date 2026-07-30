@@ -8,8 +8,7 @@ End-to-end demonstration of the Platform Engineering Copilot workflow. Each phas
 
 ```bash
 cp .env.example .env
-make bootstrap
-make platform-apply
+task platform:up   # Kind cluster + Vault dev + Kubernetes auth Terraform
 cp .cursor/mcp.json.example .cursor/mcp.json
 # Authenticate Atlassian (or Linear) + GitHub MCP in Cursor
 ```
@@ -67,7 +66,7 @@ Live demo ticket: create **PE-002** in Jira (see [jira-project-setup.md](jira-pr
 > Use the validate-infra skill for PE-002.
 
 ```bash
-make validate REQUEST=PE-002-<service>
+task validate REQUEST=PE-002-<service>
 ```
 
 **Show:** `04-validation/report.md` with PASS verdict and plan summary.
@@ -125,7 +124,7 @@ make validate REQUEST=PE-002-<service>
 If short on time, walk through the pre-built example:
 
 ```bash
-make validate REQUEST=PE-001-payments-api
+task validate REQUEST=PE-001-payments-api
 cat requests/PE-001-payments-api/01-spec/spec.md
 cat requests/PE-001-payments-api/03-terraform/main.tf
 cat requests/PE-001-payments-api/04-validation/report.md

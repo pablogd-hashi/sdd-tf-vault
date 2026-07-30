@@ -94,6 +94,35 @@ cp .cursor/mcp.json.example .cursor/mcp.json
 2. Export `GITHUB_PERSONAL_ACCESS_TOKEN` in your shell or `.env`
 3. GitHub MCP runs via Docker: `ghcr.io/github/github-mcp-server`
 
+### Slack (optional)
+
+Slack MCP enables the `notify-slack` skill: post workflow notifications, query pending tickets, and confirm ticket creation from Cursor.
+
+1. Create a Slack app at [api.slack.com/apps](https://api.slack.com/apps) with the following bot token scopes:
+   - `chat:write`, `channels:read`, `channels:history`, `channels:join`
+2. Install the app to your workspace and copy the **Bot User OAuth Token** (`xoxb-…`)
+3. Copy your **Team ID** from workspace settings (starts with `T`)
+4. Add both to `.env`:
+
+   ```bash
+   SLACK_BOT_TOKEN=xoxb-your-token
+   SLACK_TEAM_ID=T0123456789
+   SLACK_DEFAULT_CHANNEL=#infra-onboarding
+   ```
+
+5. Invite the bot to `#infra-onboarding`: `/invite @your-app-name`
+6. Slack MCP runs via `npx @modelcontextprotocol/server-slack` (configured in `.cursor/mcp.json.example`); reload MCP servers in Cursor after setting env vars
+
+**Skill usage:**
+
+```
+notify-slack: PE-123 spec is ready for review
+notify-slack: Which Jira tickets are pending?
+notify-slack: Create a Linear ticket for auth-service onboarding and confirm in Slack
+```
+
+See `.cursor/skills/notify-slack/SKILL.md` for the full scenario reference.
+
 ## Validate a request
 
 ```bash

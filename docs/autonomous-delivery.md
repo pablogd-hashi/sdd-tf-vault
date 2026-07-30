@@ -32,6 +32,12 @@ task validate-change REQUEST=PE-123-payments-api
 ./scripts/ticket-update-on-validation.sh PE-123-payments-api
 ```
 
+Post a Slack notification after any phase (optional):
+
+```
+notify-slack: PE-123 validation passed — ready for review
+```
+
 ## Workflow diagram
 
 [![Autonomous validation loop](diagrams/06-autonomous-validation-loop.svg)](https://www.figma.com/board/1RbIQpZgVRQr2TzsKe2SiZ)
@@ -94,9 +100,21 @@ All architectural choices are documented in [engineering-decisions/](engineering
 - [ADR-005: Ticket update on validation](engineering-decisions/005-jira-update-on-validation.md)
 - [ADR-006: Ticket provider abstraction](engineering-decisions/006-ticket-provider-abstraction.md)
 
+## Slack notifications
+
+The `notify-slack` skill can be combined with any phase. Three scenarios:
+
+| Scenario | Trigger |
+|----------|---------|
+| Workflow notification | `notify-slack: PE-123 spec is ready for review` |
+| Query pending tickets | `notify-slack: which Jira tickets are pending?` |
+| Ticket creation | `notify-slack: create a Linear ticket for auth-service and confirm` |
+
+See [docs/setup.md](../docs/setup.md#slack-optional) for Slack app setup and [`.cursor/skills/notify-slack/SKILL.md`](../../.cursor/skills/notify-slack/SKILL.md) for the full scenario reference.
+
 ## Backward compatibility
 
-- `make validate` — unchanged legacy pipeline
+- `task validate` / `make validate` — legacy pipeline (both work)
 - Manual skills (`ticket-to-spec`, `spec-to-plan`, etc.) — provider-agnostic
 - Golden example `PE-001-payments-api` — validates with legacy pipeline
 - Phase directory `07-ticket-update/` — renamed from `07-jira-update/` (ADR-006)
