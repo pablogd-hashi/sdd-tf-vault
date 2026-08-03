@@ -1,0 +1,8 @@
+{
+  "ticket_id": "PE-1",
+  "ticket_provider": "linear",
+  "branch": "pe/PE-1-payments-api",
+  "pr_url": "https://github.com/pablogd-hashi/sdd-tf-vault/pull/4",
+  "commit_sha": "94b75924eef7a6362bf186f7da6850099c629c70",
+  "created_at": "2026-08-03T09:24:00Z"
+}
