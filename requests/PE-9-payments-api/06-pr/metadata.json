@@ -2,7 +2,7 @@
   "ticket_id": "PE-9",
   "ticket_provider": "jira",
   "branch": "pe/PE-9-payments-api",
-  "pr_url": "https://github.com/pablogd-hashi/sdd-tf-vault-cursor/pull/2",
-  "commit_sha": "2ca7264a77b8119cd0da90c8517ec145081da670",
-  "created_at": "2026-07-28T07:15:00Z"
+  "pr_url": "https://github.com/pablogd-hashi/sdd-tf-vault/pull/6",
+  "commit_sha": "c9ac019e213ee867a67cfd669aabebb1693bbf74",
+  "created_at": "2026-08-04T12:00:00Z"
 }
