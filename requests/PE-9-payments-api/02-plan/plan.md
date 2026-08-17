@@ -4,9 +4,9 @@
 |-------|-------|
 | **Ticket** | PE-9 |
 | **Spec reference** | `01-spec/spec.md` |
-| **Status** | Draft |
+| **Status** | Approved |
 | **Author** | platform-engineer |
-| **Date** | 2026-07-28 |
+| **Date** | 2026-08-04 |
 
 ## Summary
 
@@ -58,6 +58,6 @@ terraform destroy
 
 | Role | Name | Approved | Date |
 |------|------|----------|------|
-| Platform engineer | | ☐ | |
+| Platform engineer | platform-engineer | ☑ | 2026-08-04 |
 
-**Do not proceed to Terraform until Platform engineer approval is recorded.**
+Autonomous delivery — plan auto-approved per ADR-001.

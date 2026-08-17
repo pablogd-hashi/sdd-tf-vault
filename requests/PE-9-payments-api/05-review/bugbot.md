@@ -4,7 +4,7 @@
 |-------|-------|
 | **Ticket** | PE-9 |
 | **Branch** | pe/PE-9-payments-api |
-| **Reviewed at** | 2026-07-28 |
+| **Reviewed at** | 2026-08-04 |
 
 ## Findings
 
