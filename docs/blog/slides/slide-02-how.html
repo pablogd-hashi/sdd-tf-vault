@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Factory how / why</title>
+  <link rel="stylesheet" href="css/slides.css">
+</head>
+<body>
+  <div class="slide">
+    <div class="split">
+      <div>
+        <div class="col-title">The how</div>
+        <div class="how">
+          <div class="step human">
+            <div class="who">Human</div>
+            <div class="what">moves the Linear ticket to In Progress Cursor</div>
+            <div class="cmd mono"></div>
+          </div>
+          <div class="step agent">
+            <div class="who">Agent</div>
+            <div class="what">turns the ticket into a spec</div>
+            <div class="cmd mono">create-spec</div>
+          </div>
+          <div class="step agent">
+            <div class="who">Agent</div>
+            <div class="what">plans and writes Terraform, unattended</div>
+            <div class="cmd mono">implement-change</div>
+          </div>
+          <div class="step agent">
+            <div class="who">Agent</div>
+            <div class="what">validates until PASS</div>
+            <div class="cmd mono">validate-change</div>
+          </div>
+          <div class="step agent">
+            <div class="who">Agent</div>
+            <div class="what">reviewer, Bugbot, draft PR</div>
+            <div class="cmd mono">open-github-pr</div>
+          </div>
+          <div class="step human">
+            <div class="who">Human</div>
+            <div class="what">reviews artifacts and merges</div>
+            <div class="cmd mono"></div>
+          </div>
+          <div class="persist">
+            <div class="who">Stays</div>
+            <div class="what">hooks, evals and AGENTS.md live in the repo</div>
+            <div class="cmd mono">deny / yield</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="col-title">The why — three eras of coding</div>
+        <div class="why-card">
+          <div class="kicker">Tab</div>
+          <p>Lives in the keystroke. Gone when you stop typing.</p>
+        </div>
+        <div class="why-card">
+          <div class="kicker">Synchronous agentic SDLC</div>
+          <p>Lives in the Cursor window. You stay in the chair.</p>
+        </div>
+        <div class="why-card hl">
+          <div class="kicker">Asynchronous software factory</div>
+          <p>Lives in the ticket and the repo. Agent on a VM. You come back to a PR.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

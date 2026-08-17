@@ -8,6 +8,8 @@ Second era is what I wrote about last time: a **synchronous agentic SDLC**. You 
 
 Third era is the one Cursor is pushing now, and the one this post is about: a **software factory**, with **asynchronous agents running the whole SDLC**. You don’t sit through the phases. You move a Linear ticket to In Progress Cursor, a Cloud Agent picks it up on its own VM, and you come back to a draft PR. Spec, plan, Terraform, validation, Bugbot, ticket comment. Same seven phases as last time. You’re just not in the chair for them.
 
+![Tab vs synchronous agentic SDLC vs asynchronous software factory](slides/sdlc-eras.png)
+
 Anyway. I published the first post and then did what I always do after a discovery session: I looked at the whiteboard again.
 
 Because once you map the process, the next question is almost never “can the agent write the Terraform?”. It’s more like: ok, but can it do the whole thing while I’m in another meeting? Do I really need a Kind cluster in the loop? And if I leave it running, how do I know it didn’t skip validation and merge anyway?
@@ -25,6 +27,8 @@ A factory, at least in this experiment, is era three: I can hand the ticket off.
 If the Cloud Agent bit sounds familiar, it’s because I already did something similar in [Causa](https://medium.com/@pablogd/using-cursor-cloud-agents-for-observability-triage-6ad4ad7b215c) for observability triage. This time I pointed that idea at the full onboarding SDLC instead of an incident.
 
 The rest of this post is the harness around that async loop. Without it, “move the ticket and walk away” is just hoping for the best.
+
+![The factory loop and the three eras of coding](slides/how-why.png)
 
 ## Kind was getting in the way
 

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Software factory — Medium diagrams</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.css">
+  <style>
+    .reveal .slides { text-align: left; }
+    .reveal .slides section { padding: 0; }
+    iframe.embed {
+      width: 1920px;
+      height: 1080px;
+      border: 0;
+      transform-origin: top left;
+    }
+    html, body { background: #fff; }
+  </style>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+      <section id="sdlc"></section>
+      <section id="how"></section>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.js"></script>
+  <script type="module">
+    import { slides } from './js/deck.js';
+    for (const [id, html] of Object.entries(slides)) {
+      const section = document.getElementById(id);
+      if (section) section.innerHTML = html;
+    }
+    await Reveal.initialize({
+      hash: true,
+      width: 1920,
+      height: 1080,
+      margin: 0,
+      center: false,
+      transition: 'none',
+    });
+  </script>
+</body>
+</html>
