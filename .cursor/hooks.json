@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "hooks": {
+    "afterFileEdit": [
+      {
+        "command": ".cursor/hooks/fmt-tf.sh"
+      },
+      {
+        "command": ".cursor/hooks/check-spec.sh"
+      }
+    ],
+    "beforeShellExecution": [
+      {
+        "command": ".cursor/hooks/deny-dangerous.sh"
+      }
+    ],
+    "beforeMCPExecution": [
+      {
+        "command": ".cursor/hooks/deny-mcp-merge.sh"
+      }
+    ],
+    "stop": [
+      {
+        "command": ".cursor/hooks/stop-validate.sh",
+        "loop_limit": 3
+      }
+    ]
+  }
+}

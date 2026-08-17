@@ -259,4 +259,16 @@ EOF
 log "Report written to ${REPORT}"
 log "Verdict: ${VERDICT}"
 
+# Factory telemetry (no-op if OTel collector is down)
+if [ -x "${ROOT_DIR}/scripts/factory-otel.sh" ]; then
+  RESULT_LABEL="fail"
+  [[ "${VERDICT}" == PASS* ]] && RESULT_LABEL="pass"
+  FACTORY_TICKET_ID="${TICKET_ID}" \
+    "${ROOT_DIR}/scripts/factory-otel.sh" metric factory.validation.result 1 "result=${RESULT_LABEL}" "request=${REQUEST}" || true
+  FACTORY_TICKET_ID="${TICKET_ID}" \
+    "${ROOT_DIR}/scripts/factory-otel.sh" span validate-change "request=${REQUEST}" "result=${RESULT_LABEL}" || true
+  FACTORY_TICKET_ID="${TICKET_ID}" \
+    "${ROOT_DIR}/scripts/factory-otel.sh" log "validate-change ${VERDICT} for ${REQUEST}" "phase=validate" || true
+fi
+
 [[ "${VERDICT}" == PASS* ]] || exit 1
