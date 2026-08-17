@@ -123,6 +123,16 @@ notify-slack: Create a Linear ticket for auth-service onboarding and confirm in 
 
 See `.cursor/skills/notify-slack/SKILL.md` for the full scenario reference.
 
+### Presentation skill (optional)
+
+The public presentation skill is vendored at `vendor/presentation_skill`. Cursor discovers it as the `presentation` skill (`.cursor/skills/presentation/SKILL.md`). Image generation uses Cursor's image tool; optional provider keys stay in workspace `.env`.
+
+```bash
+python3 -m venv vendor/presentation_skill/.venv
+vendor/presentation_skill/.venv/bin/pip install -e 'vendor/presentation_skill[dev]'
+bash vendor/presentation_skill/scripts/presentation-skill "Topic" --mode image --output decks/topic
+```
+
 ## Validate a request
 
 ```bash
