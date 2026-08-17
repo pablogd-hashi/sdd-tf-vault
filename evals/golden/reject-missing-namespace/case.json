@@ -1,0 +1,15 @@
+{
+  "id": "reject-missing-namespace",
+  "ticket": {
+    "summary": "Onboard auth-api to Vault",
+    "service_name": "auth-api",
+    "team": "auth",
+    "service_account": "auth-api",
+    "secret_paths": ["config"]
+  },
+  "expect": {
+    "approved": false,
+    "has_terraform": false,
+    "reject_reason_contains": "namespace"
+  }
+}

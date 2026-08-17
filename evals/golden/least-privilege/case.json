@@ -1,0 +1,8 @@
+{
+  "id": "least-privilege",
+  "request_id": "PE-001-payments-api",
+  "expect": {
+    "policy_must_include": "teams/",
+    "policy_must_not_include": ["capabilities = [\"create\"", "capabilities = [\"delete\""]
+  }
+}
