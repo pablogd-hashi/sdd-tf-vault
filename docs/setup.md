@@ -11,7 +11,7 @@ Everything in this repository runs locally. No cloud resources are provisioned. 
 | Docker | 24+ | [docker.com](https://www.docker.com/) — required for Grafana/observability |
 | Terraform | 1.5+ | `brew install terraform` |
 | Go | 1.21+ | `brew install go` |
-| Task | 3.x | `brew install go-task` |
+| Task | 3.x | Optional (`brew install go-task`) — skills call scripts |
 | Vault CLI | 1.15+ | `brew install vault` (optional if Docker provides Vault) |
 | Kind / kubectl / Helm | — | Optional Kind path only |
 | tflint | 0.50+ | `brew install tflint` (optional) |
@@ -28,6 +28,8 @@ cp .env.example .env
 Never commit `.env`. Vault credentials for dev mode are documented in bootstrap output (`root` token).
 
 ## Bootstrap factory (no Kind)
+
+**Run a test now:** [run-now.md](run-now.md) (scripts, go-task optional).
 
 In Cursor say **start observability** (full stack) or **start the environment** (Vault only).
 

@@ -2,7 +2,9 @@
 
 This repository is a **software factory** for Vault service onboarding.
 
-Prefer **skills** over raw `task` commands. Do not ask the user to remember Taskfile names.
+Prefer **skills** over raw `task` commands. Skills invoke scripts (`./scripts/factory-environment.sh`, `./evals/score.sh`, …). go-task is optional.
+
+First-time local test: follow [docs/run-now.md](docs/run-now.md).
 
 ## Local demo vs Cloud Agent webhook
 

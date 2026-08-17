@@ -12,7 +12,8 @@ Print (and open, when a browser opener exists) the two Grafana dashboards in one
 1. Run:
 
 ```bash
-task factory:dashboards
+./observability/scripts/dashboards.sh
+# or: task factory:dashboards
 ```
 
 2. If Grafana is down, tell the user to say **start observability** first.

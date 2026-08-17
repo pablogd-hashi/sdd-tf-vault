@@ -19,7 +19,8 @@ Score checked-in golden artifacts. No `CURSOR_API_KEY` required.
 1. Run:
 
 ```bash
-task factory:evals
+./evals/score.sh
+# or: task factory:evals
 ```
 
 2. Report PASS/FAIL per case and the yield line (`N passed, M failed`).

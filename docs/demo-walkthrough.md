@@ -1,6 +1,8 @@
 # Demo Walkthrough
 
-Two beats: **operate the factory in English** (local Grafana), then the original **gated IDE walkthrough**.
+**Start here for a live test:** [run-now.md](run-now.md) (five minutes, scripts, no go-task).
+
+Two longer beats: **operate the factory in English** (local Grafana), then the original **gated IDE walkthrough**.
 
 ## Factory demo (local agent, ~10 minutes)
 

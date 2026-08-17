@@ -1,8 +1,8 @@
 # Platform Engineering Copilot
 
-An open-source reference implementation showing how to implement software delivery in regulated platform engineering teams.
+Specification-driven **software factory** for Vault service onboarding: tickets become Terraform, with hooks, evals, and Grafana.
 
-This repository demonstrates a **specification-driven software factory** that converts infrastructure tickets (Jira or Linear) into production-ready Terraform — with hooks, evals, and a Grafana operate layer.
+**Test it now:** [docs/run-now.md](docs/run-now.md) — five minutes, no Kind, no go-task.
 
 ## Operate the factory (no Taskfile memorization)
 
@@ -16,6 +16,14 @@ In Cursor, say:
 | **factory status** | Health of Vault and Grafana |
 | **run evals** | Deterministic yield on golden tickets |
 | **stop the factory** | Tear down compose + host Vault |
+
+Same thing from a shell (scripts; `task` is optional):
+
+```bash
+./scripts/factory-environment.sh    # Vault
+./evals/score.sh                    # yield
+./observability/scripts/up.sh       # Grafana — needs Docker
+```
 
 Grafana: http://127.0.0.1:3000 (admin/admin) — [Factory Operations](http://127.0.0.1:3000/d/factory-operations/factory-operations) and [Vault Onboarding](http://127.0.0.1:3000/d/vault-onboarding/vault-onboarding).
 
@@ -72,20 +80,20 @@ No cloud resources are provisioned. No enterprise licences required.
 
 ### Prerequisites
 
-- Docker, Kind, kubectl, Helm, Terraform ≥ 1.5, Go ≥ 1.21
-- [go-task](https://taskfile.dev/installation/) (`brew install go-task`) — task runner for the flows below
-- Optional: [Vault CLI](https://developer.hashicorp.com/vault/install), [tflint](https://github.com/terraform-linters/tflint)
+- Terraform ≥ 1.5, Go ≥ 1.21, Vault CLI **or** Docker
+- Docker — only for Grafana / observability
+- [go-task](https://taskfile.dev/installation/) — optional; skills call scripts directly
+- Kind / kubectl / Helm — optional Kind path only
 
-### Task runner ([go-task](https://taskfile.dev))
+### Task runner ([go-task](https://taskfile.dev)) — optional
 
-Every stack is modelled as a **flow** that supports `up`, `down`, `reset`, and `url`:
+Skills call scripts. If you have `task` installed, `task factory:environment` is the same as `./scripts/factory-environment.sh`.
 
-| Flow | What it manages | Commands |
-|------|-----------------|----------|
-| `platform` | Kind cluster + Vault (dev) + Kubernetes auth | `task platform:up` · `platform:down` · `platform:reset` · `platform:url` |
-| `request`  | A request's Terraform (`REQUEST=<id>`) | `task request:up REQUEST=<id>` · `request:down` · `request:reset` · `request:url` |
-
-Run `task` (or `task help`) to see everything. Top-level `task up`/`down`/`reset`/`url` are shortcuts for the `platform` flow.
+| Flow | What it manages |
+|------|-----------------|
+| `factory` | Vault `-dev` + Grafana stack |
+| `platform` | Vault `-dev` (or `platform:kind` for Kind) |
+| `request` | Per-request Terraform (`REQUEST=<id>`) |
 
 ### Bootstrap factory runtime (no Kind)
 
@@ -162,7 +170,9 @@ Skills are **explicitly invoked** — the agent does not autonomously skip gates
 
 ## Demo
 
-Follow [docs/demo-walkthrough.md](docs/demo-walkthrough.md) for a ~15 minute end-to-end walkthrough using the golden example at `requests/PE-001-payments-api/`.
+**Fastest:** [docs/run-now.md](docs/run-now.md)
+
+Full script: [docs/demo-walkthrough.md](docs/demo-walkthrough.md). Golden example: `requests/PE-001-payments-api/`.
 
 ## Licence
 

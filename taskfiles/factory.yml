@@ -6,7 +6,8 @@ tasks:
   environment:
     desc: "Start Vault -dev and apply platform auth mount"
     cmds:
-      - task: :platform:up
+      - chmod +x scripts/factory-environment.sh
+      - scripts/factory-environment.sh
 
   observability:
     desc: "Start OTel / Prometheus / Loki / Grafana / Jaeger / Vault compose stack"

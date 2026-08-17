@@ -9,11 +9,12 @@ Start the Causa-shaped local compose stack so Grafana and Prometheus are on loca
 
 ## Steps
 
-1. Docker must be running.
-2. Run:
+1. Docker must be running (`docker info`).
+2. Run (go-task optional):
 
 ```bash
-task factory:observability
+./observability/scripts/up.sh
+# or: task factory:observability
 ```
 
 3. Wait until the script prints Grafana and Prometheus URLs.

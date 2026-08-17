@@ -12,14 +12,15 @@ Do **not** create a Kind cluster. Kind is the optional `platform:kind` path only
 ## Steps
 
 1. Confirm Docker is running, or that the `vault` binary is on PATH.
-2. Run:
+2. Run (go-task optional):
 
 ```bash
-task factory:environment
+./scripts/factory-environment.sh
+# or: task factory:environment
 ```
 
-3. Report the Vault URL from the command output (default `http://127.0.0.1:8200`, token `root`).
-4. If it failed, run `task factory:status` and show the error.
+3. Report the Vault URL (default `http://127.0.0.1:8200`, token `root`).
+4. If it failed, run `./observability/scripts/status.sh` and show the error.
 
 ## Output
 
