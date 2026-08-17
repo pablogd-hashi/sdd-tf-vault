@@ -63,6 +63,6 @@ Vault service onboarding for `<service-name>` per approved spec PE-XXX.
 }
 ```
 
-Use `ticket_provider` from the spec header / `autonomous.json` (`jira` | `linear`).
+Use `ticket_provider` from the spec header / `autonomous.json` (`jira` | `linear` | `pasted`).
 
 6. **Stop** — ask user to review PR before ticket update (`ticket-update` skill)

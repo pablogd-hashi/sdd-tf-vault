@@ -47,13 +47,32 @@ Tear down: **stop the factory**
 
 Docker is not running, or you have not said **start observability** / **run the local demo** yet. Host Vault (`start the environment`) does **not** bind `:3000`.
 
-## Async Cloud Agent (no Grafana)
+## New onboarding without Jira or Linear (Cursor Ultra)
 
-Same factory line, no dashboards. Hooks and evals still run.
+Paste this in Agent chat and say **onboard this**:
+
+```
+Service name: auth-api
+Team: platform
+Environment: local
+K8s namespace: platform
+K8s service account: auth-api
+Secret paths: config, db
+Approver: platform-lead
+
+Acceptance criteria
+- Service can authenticate via Kubernetes auth
+- Service can read config and db secrets from Vault
+- Policy scoped to platform team paths only
+```
+
+That is `onboard-from-paste`: evals + hooks + spec → Terraform → draft PR. No tracker MCP. Grafana stays off unless you also **run the local demo**.
+
+## Async Cloud Agent (Teams + Jira, or Linear)
+
+Jira-triggered automations need Cursor **Teams** and Atlassian OAuth on the site that hosts project PE. Ultra cannot drive that hook.
 
 | Tracker | Move the ticket to |
 |---------|-------------------|
-| **Jira** (existing hook) | **In Progress, agents** |
+| **Jira** (Teams) | **In Progress, agents** (or your `In Progress Cursor` Jira status) |
 | Linear | **In Progress Cursor** |
-
-The Cloud Agent follows `AGENTS.md`: evals 4/4 → `create-spec` → implement → validate PASS → draft PR → comment on the ticket. Humans merge. It does not bind `:3000` and must not say **start observability**.

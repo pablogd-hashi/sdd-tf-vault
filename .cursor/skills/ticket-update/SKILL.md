@@ -19,6 +19,7 @@ Post completion comment to the ticket provider (Jira or Linear) and save draft t
 
 | Provider | Post comment | Transition / status |
 |----------|--------------|---------------------|
+| pasted | none — write `07-ticket-update/comment.md` only | skip |
 | jira | `addCommentToJiraIssue` | `transitionJiraIssue` (ask user first) |
 | linear | `create_comment` | `update_issue` (ask user first) |
 
@@ -28,7 +29,7 @@ Post completion comment to the ticket provider (Jira or Linear) and save draft t
 2. **Read** `04-validation/report.md` for verdict summary
 3. **Read** `03-terraform/main.tf` outputs for policy/role names
 4. **Write** `requests/<id>/07-ticket-update/comment.md` using template from `requests/_template/07-ticket-update/comment.md`
-5. **Post comment** to the ticket via the provider MCP
+5. **Post comment** via MCP only for `jira` or `linear`. For `pasted`, skip MCP.
 6. **Transition / update status** to Done/In Review if appropriate (ask user first)
 
 ## Comment must include

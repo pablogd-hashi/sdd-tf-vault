@@ -6,46 +6,44 @@ Prefer **skills** over raw `task` or shell. Skills invoke scripts. go-task is op
 
 First-time local IDE test: user says **run the local demo** ([docs/run-now.md](docs/run-now.md)). Requires Docker Desktop.
 
-## Local demo vs Cloud Agent webhook
+## Intake (pick one)
 
-| Path | Trigger | What runs | Grafana |
-|------|---------|-----------|---------|
-| **Local agent / IDE** | You say **run the local demo** | Skills + evals + apply to laptop Vault | Yes (`localhost:3000`) |
-| **Cloud Agent** | Jira **In Progress, agents** or Linear **In Progress Cursor** | Autonomous delivery: hooks + evals + draft PR | **No** — skip observability |
+| Path | Plan / trigger | Grafana |
+|------|----------------|---------|
+| **Paste** (default on Cursor Ultra) | User pastes the request → `onboard-from-paste` | Only if they also say **run the local demo** / **start observability** |
+| **Local demo** | **run the local demo** (golden PE-001) | Yes |
+| **Jira webhook** | Cursor **Teams** automations + Atlassian MCP on the PE site | No |
+| **Linear webhook** | **In Progress Cursor** | No |
 
-Use the existing Jira Cursor webhook. Moving a well-formed PE ticket to **In Progress, agents** is enough. Do not start observability, Docker Compose, or Kind on that path.
+Jira-triggered Cloud Agents need Cursor Teams (and Atlassian OAuth on the site that hosts project PE). Ultra: do not wait on Jira. Paste the fields.
 
-## Autonomous delivery (Cloud Agent — Jira or Linear)
+## Autonomous delivery
 
-When this run was started from a ticket webhook:
+1. If the user pasted fields: `onboard-from-paste` (`ticket_provider: pasted`). No Jira/Linear MCP.
+2. Else read the Jira or Linear ticket that triggered the run.
+3. `./evals/score.sh` — yield must be 4/4. If FAIL, stop.
+4. `create-spec` → `implement-change` → `validate-change` until `04-validation/report.md` is PASS.
+5. Honor `.cursor/hooks.json`. Do not bypass them.
+6. Reviewer → `bugbot-review` → `open-github-pr` (draft).
+7. Ticket comment: skip MCP when provider is `pasted`. Do not transition to Done.
+8. Stop. Humans merge.
 
-1. Read the Jira or Linear ticket that triggered the run (Atlassian MCP or Linear MCP). Provider is `jira` if the ticket came from Jira.
-2. `./evals/score.sh` — factory yield must be 4/4. If evals FAIL, stop and report; do not invent a spec.
-3. `create-spec` → `implement-change` → `validate-change` until `04-validation/report.md` is PASS.
-4. Hooks in `.cursor/hooks.json` run in this checkout (fmt, incomplete-spec reject, deny merge / out-of-scope apply, stop until validation PASS). Do not bypass them.
-5. Reviewer subagent → `bugbot-review` → `open-github-pr` (draft).
-6. Comment on the ticket. Do not transition to Done.
-7. Stop. Humans merge.
+**Do not** invoke `start-observability` on a Cloud Agent webhook run. **Do not** merge.
 
-**Do not** invoke `start-observability`, `show-dashboard`, or `run-local-demo`. **Do not** merge. **Do not** wait for "approved".
+Never invent spec values. Never `terraform apply` outside `requests/<id>/03-terraform` or `terraform/platform`. Cloud Agent VMs usually have no laptop Vault — plan may SKIP. Apply to Vault is local or post-merge.
 
-Never invent spec values. Never `terraform apply` outside `requests/<id>/03-terraform` or `terraform/platform`. Cloud Agent VMs usually have no laptop Vault — plan may SKIP; that does not block a draft PR when fmt/validate PASS. Apply to Vault is local or post-merge.
+## Factory DX skills (local IDE)
 
-## Factory DX skills (local IDE only)
-
-- `run-local-demo` — full IDE test (Grafana + evals + PE-001 apply)
+- `onboard-from-paste` — autonomous delivery from a pasted request (no tracker)
+- `run-local-demo` — Grafana + evals + PE-001 apply
 - `start-environment` — Vault `-dev` + kubernetes auth mount (no Kind)
 - `start-observability` — OTel, Prometheus, Loki, Grafana, Jaeger, Vault
-- `show-dashboard` — Factory Operations + Vault Onboarding URLs
-- `factory-status` — health
-- `stop-factory` — tear down compose + host Vault (does not delete Kind)
-- `run-evals` — deterministic yield
-- `validate-request` — local validate (no ticket comment)
-- `apply-onboarding` — terraform apply the request against local Vault
-- `connect-observability-mcp` — copy Grafana/Prometheus MCP if missing
+- `show-dashboard` / `factory-status` / `stop-factory`
+- `run-evals` / `validate-request` / `apply-onboarding`
+- `connect-observability-mcp`
 
 ## Runtime
 
-Factory default is **Vault as a binary/compose service**, not Kind. Kind (`platform:kind`) is optional proof that a pod can log in.
+Factory default is **Vault as a binary/compose service**, not Kind.
 
 Vault: `http://127.0.0.1:8200` token `root`.
