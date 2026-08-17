@@ -58,7 +58,7 @@ Approver: platform-lead
 
 Team **Onboarding** already has `In Progress Cursor`. Team **PE** should add the same started-type status if demo tickets are `PE-*`, then point the Cursor webhook at that status.
 
-The webhook lives in the Cursor dashboard (not in git). Recreate it as: Linear issue enters `In Progress Cursor` → start Cloud Agent on this repo with the autonomous prompt in `AGENTS.md`.
+The webhook lives in the Cursor dashboard (not in git). Recreate it as: Linear issue enters `In Progress Cursor` → start Cloud Agent on this repo. Paste the generic Instructions from [AGENTS.md](../AGENTS.md#automation-instructions-copy-paste) — do not hardcode PE-9 or any other ticket.
 
 Cloud Agents do **not** fill laptop Grafana. For dashboards, use the local agent and say **start observability**.
 

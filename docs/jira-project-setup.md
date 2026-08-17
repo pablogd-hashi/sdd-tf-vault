@@ -63,7 +63,7 @@ The webhook lives in the Cursor dashboard (not in git): Jira issue enters **In P
 
 That is the unattended factory. Grafana stays on the laptop IDE path (`run the local demo`).
 
-If the hook already launches Cloud Agents from an older prompt, update the automation prompt to: follow `AGENTS.md` autonomous delivery; run `./evals/score.sh`; do not start observability.
+If the hook already launches Cloud Agents from an older prompt (especially one hardcoded to **PE-9**), replace the **Instructions** field with the copy-paste block in [AGENTS.md](../AGENTS.md#automation-instructions-copy-paste). The agent must work on **the ticket that triggered the run**, not a fixed demo key.
 
 ## Atlassian MCP in Cursor
 

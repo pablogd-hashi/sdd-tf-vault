@@ -19,17 +19,50 @@ Use the existing Jira Cursor webhook. Moving a well-formed PE ticket to **In Pro
 
 When this run was started from a ticket webhook:
 
-1. Read the Jira or Linear ticket that triggered the run (Atlassian MCP or Linear MCP). Provider is `jira` if the ticket came from Jira.
-2. `./evals/score.sh` — factory yield must be 4/4. If evals FAIL, stop and report; do not invent a spec.
-3. `create-spec` → `implement-change` → `validate-change` until `04-validation/report.md` is PASS.
-4. Hooks in `.cursor/hooks.json` run in this checkout (fmt, incomplete-spec reject, deny merge / out-of-scope apply, stop until validation PASS). Do not bypass them.
-5. Reviewer subagent → `bugbot-review` → `open-github-pr` (draft).
-6. Comment on the ticket. Do not transition to Done.
-7. Stop. Humans merge.
+1. Identify **this run's ticket** from the trigger (Jira work item, Linear issue, or webhook JSON `ticket_id`). Never assume `PE-9`, `PE-001`, or any other key.
+2. Read that ticket via Atlassian MCP or Linear MCP. Provider is `jira` if the ticket came from Jira.
+3. `./evals/score.sh` — factory yield must be 4/4. If evals FAIL, stop and report; do not invent a spec.
+4. `create-spec` → `implement-change` → `validate-change` until `04-validation/report.md` is PASS.
+5. Hooks in `.cursor/hooks.json` run in this checkout (fmt, incomplete-spec reject, deny merge / out-of-scope apply, stop until validation PASS). Do not bypass them.
+6. Reviewer subagent → `bugbot-review` → `open-github-pr` (draft).
+7. Comment on **this run's ticket**. Do not transition to Done.
+8. Stop. Humans merge.
 
 **Do not** invoke `start-observability`, `show-dashboard`, or `run-local-demo`. **Do not** merge. **Do not** wait for "approved".
 
-Never invent spec values. Never `terraform apply` outside `requests/<id>/03-terraform` or `terraform/platform`. Cloud Agent VMs usually have no laptop Vault — plan may SKIP; that does not block a draft PR when fmt/validate PASS. Apply to Vault is local or post-merge.
+Never invent spec values. Never copy `requests/PE-9-payments-api/` or `requests/PE-001-payments-api/` as the live spec. Never `terraform apply` outside `requests/<id>/03-terraform` or `terraform/platform`. Cloud Agent VMs usually have no laptop Vault — plan may SKIP; that does not block a draft PR when fmt/validate PASS. Apply to Vault is local or post-merge.
+
+### Automation Instructions (copy-paste)
+
+Paste this into the Cursor Automation / Jira Cloud Agent **Instructions** field. Do **not** hardcode a ticket key, site hostname, or board id.
+
+```
+Follow AGENTS.md autonomous delivery for the ticket that started this run.
+
+Ticket identity (in order):
+1. The Jira or Linear work item attached to this Cloud Agent trigger
+2. Else webhook JSON: ticket_id, ticket_provider (jira|linear), status, summary
+
+Do not assume PE-9, PE-001, payments-api, or any other key.
+Do not Rovo-search for a hardcoded issue.
+Do not reuse requests/PE-9-payments-api/ or requests/PE-001-payments-api/ from git as the spec.
+
+Guards:
+- If this is a Jira status trigger, continue only for status "In Progress, agents".
+- If this is a Linear status trigger, continue only for status "In Progress Cursor".
+- If ticket_id cannot be determined, stop. Do not invent a ticket.
+- Read the live ticket via Atlassian MCP (jira) or Linear MCP (linear).
+- If required onboarding fields are missing, comment on that ticket listing them, then stop.
+
+Then:
+1. ./evals/score.sh — stop if not 4/4
+2. create-spec → implement-change → validate-change until PASS
+3. reviewer → bugbot-review → open-github-pr (draft only)
+4. Comment on this run's ticket. Do not transition to Done. Do not merge.
+
+Do not start observability, Docker Compose, or Kind.
+Branch: pe/<KEY>-<service>
+```
 
 ## Factory DX skills (local IDE only)
 
