@@ -1,32 +1,39 @@
 version: '3'
 
-# Platform flow: local Kind cluster + Vault (dev mode) + Kubernetes auth backend.
-# All paths are relative to the repository root (the parent include sets dir=ROOT_DIR).
+# Platform flow.
+# Factory default: Vault -dev (compose or host binary) + kubernetes auth *mount*.
+# Optional Kind path: platform:kind (cluster + Helm Vault + JWT config).
 
 tasks:
   up:
-    desc: "Bring up the platform: Kind cluster + Vault (dev) + Kubernetes auth"
+    desc: "Factory default — Vault -dev + enable Kubernetes auth mount (no Kind)"
     cmds:
-      - task: bootstrap
+      - task: vault-dev
       - task: apply
       - task: url
 
+  vault-dev:
+    desc: "Start Vault in -dev mode (compose preferred, host binary fallback)"
+    cmds:
+      - chmod +x platform/scripts/vault-dev.sh platform/scripts/vault-dev-stop.sh scripts/*.sh
+      - platform/scripts/vault-dev.sh
+
   down:
-    desc: "Destroy platform Terraform and delete the Kind cluster"
+    desc: "Stop factory Vault -dev (host). Compose Vault is stopped by factory:stop / observability:down"
     cmds:
       - cmd: terraform -chdir=terraform/platform destroy -auto-approve
         ignore_error: true
-      - platform/scripts/teardown.sh
+      - platform/scripts/vault-dev-stop.sh
       - rm -f .terraform-platform.tfstate .terraform-platform.tfstate.backup
 
   reset:
-    desc: "Tear the platform down and bring it back up"
+    desc: "Tear the factory Vault down and bring it back up"
     cmds:
       - task: down
       - task: up
 
   url:
-    desc: "Print the Vault URL for the platform"
+    desc: "Print the Vault URL"
     silent: true
     cmds:
       - |
@@ -43,23 +50,47 @@ tasks:
         if curl -sf "${ADDR}/v1/sys/health" >/dev/null 2>&1; then
           echo "Vault reachable at ${ADDR}"
         else
-          echo "Vault NOT reachable at ${ADDR} (run: task platform:up)"
+          echo "Vault NOT reachable at ${ADDR} (say: start the environment)"
           exit 1
         fi
 
-  bootstrap:
-    desc: "Create Kind cluster, install Vault (dev), start port-forward"
-    cmds:
-      - chmod +x platform/scripts/bootstrap.sh platform/scripts/teardown.sh scripts/*.sh
-      - platform/scripts/bootstrap.sh
-
   apply:
-    desc: "Apply platform Terraform (enable Kubernetes auth backend)"
+    desc: "Apply platform Terraform (enable Kubernetes auth mount, no cluster JWT)"
     cmds:
       - terraform -chdir=terraform/platform init -input=false
       - terraform -chdir=terraform/platform apply -auto-approve
 
+  kind:
+    desc: "Optional — Kind cluster + Helm Vault + Kubernetes auth JWT config"
+    cmds:
+      - task: bootstrap
+      - task: apply
+      - task: apply-kind
+      - task: url
+
+  bootstrap:
+    desc: "Create Kind cluster, install Vault (dev), start port-forward (optional path)"
+    cmds:
+      - chmod +x platform/scripts/bootstrap.sh platform/scripts/teardown.sh scripts/*.sh
+      - platform/scripts/bootstrap.sh
+
+  apply-kind:
+    desc: "Apply Kind JWT config onto the Kubernetes auth backend"
+    cmds:
+      - terraform -chdir=terraform/platform-kind init -input=false
+      - terraform -chdir=terraform/platform-kind apply -auto-approve
+
+  teardown-kind:
+    desc: "Destroy Kind JWT config and delete the Kind cluster"
+    cmds:
+      - cmd: terraform -chdir=terraform/platform-kind destroy -auto-approve
+        ignore_error: true
+      - cmd: terraform -chdir=terraform/platform destroy -auto-approve
+        ignore_error: true
+      - platform/scripts/teardown.sh
+      - rm -f .terraform-platform.tfstate .terraform-platform.tfstate.backup .terraform-platform-kind.tfstate .terraform-platform-kind.tfstate.backup
+
   ensure-vault:
-    desc: "Ensure the Vault port-forward is running"
+    desc: "Ensure Vault is reachable (starts -dev if needed)"
     cmds:
       - scripts/ensure-vault-ready.sh
