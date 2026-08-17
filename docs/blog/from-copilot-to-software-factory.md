@@ -1,95 +1,78 @@
 # From Copilot to Software Factory
 
-*A follow-up to [Spec-Driven Vault Onboarding with Cursor](https://medium.com/@pablogd/spec-driven-vault-onboarding-with-cursor-1eb95cc5aeaf).*
+As I mentioned in the [previous post](https://medium.com/@pablogd/spec-driven-vault-onboarding-with-cursor-1eb95cc5aeaf), I spent some time trying to take the usual Vault onboarding process ( ticket, spec, Terraform, review, PR) and run it with Cursor the same way we now run spec-driven software work.
 
-In the previous post I asked a fairly specific question: can the same spec-driven patterns we are using to change software development also be applied to something as process-heavy as Vault onboarding?
+The short version, if you skipped that one: a Linear or Jira ticket comes in, a skill turns it into a spec, another one into a plan, then a thin Terraform wrapper around a module that creates the policy, the Kubernetes auth role and the KV paths. Validation is a real `terraform plan` / `terraform test`, not an agent telling you “looks good”. A human still merges.
 
-The answer I landed on was “yes but” / “yes and”. A ticket becomes a spec, the spec becomes a plan, the plan becomes a thin Terraform wrapper around a reusable module, validation produces a PASS or FAIL that is not an LLM opinion, and a human still merges the PR.
+It worked. Kind cluster on my laptop, I was every persona, I approved my own spec. I even said, please don’t use that blog to tell your security team they are no longer needed :)
 
-That was the copilot.
+Anyway. I published it and then did what I always do after a discovery session: I looked at the whiteboard again.
 
-Then, as usually happens after a discovery session, someone looks at the whiteboard and asks the next question. Not “can the agent write the Terraform?” — we already proved that. The questions that actually matter in a platform team are more like:
+Because once you map the process, the next question is almost never “can the agent write the Terraform?”. It’s more like: ok, but how do I actually run this? Do I need to remember four `task` targets? Do I really need a full Kind cluster just to create a secret path? And if I leave it running, how do I know it didn’t just skip validation and open a PR anyway?
 
-- How do I *operate* this?
-- How do I know the factory is healthy, not just that one request looked fine?
-- Can it run while my laptop is closed?
-- And please, do I really need to memorise a Taskfile to use it?
+So I went back to the same repo and tried to turn that copilot into a software factory. Same seven phases, same Vault module, same “don’t invent secret paths” rule. What I added is everything around it.
 
-So I went back to the same repo and tried to turn the copilot into a **software factory**. Same seven phases. Same Vault module. Same rule that agents never invent secret paths. What changed is everything around the workflow: the runtime, the operate layer, the gauges that fire even when the agent is tired, and a way to score yield without asking another model to grade the first one.
+The repo is still [here](https://github.com/pablogd-hashi/sdd-tf-vault-cursor) if you want to skip ahead and break things. There’s a five-minute path in `docs/run-now.md`.
 
-The code lives in [`pablogd-hashi/sdd-tf-vault-cursor`](https://github.com/pablogd-hashi/sdd-tf-vault-cursor). If you want to skip the narrative and just run it, there is a five-minute path in [`docs/run-now.md`](https://github.com/pablogd-hashi/sdd-tf-vault-cursor/blob/cursor/software-factory-8d74/docs/run-now.md).
+## Why a factory?
 
-## What I mean by “factory”
+I keep using that word, so let me be concrete.
 
-A copilot helps you do a job. A factory is a system you can start, score, watch, and stop.
+The first version was a copilot: you sit in Cursor, you invoke `ticket-to-spec`, you approve, you invoke the next skill, and so on. That’s useful, and it’s still there ( the manual path didn’t go anywhere).
 
-For Vault service onboarding that means four things the original workflow did not have:
+A factory, at least in this experiment, is the same workflow plus: I can start it without Kind, I can tell Cursor “start the environment” instead of memorising a Taskfile, I can score whether the goldens still pass without asking another LLM, I can open Grafana and see yield / hook denies / whether Vault is up, and I can move a Linear ticket to In Progress Cursor and let a Cloud Agent run the autonomous path until there’s a draft PR.
 
-1. **A runtime that is not a nested Kubernetes cluster.** Kind was great for proving a pod can log in. It is a terrible substrate for a Cloud Agent VM, and a heavy one for a local demo.
-2. **An operate vocabulary in English.** “Start the environment”, “run evals”, “show the dashboard”. Not `task platform:up`.
-3. **Gauges that are not prompts.** Cursor Rules are instructions. Hooks are code. If a spec is missing a namespace, the edit is denied. If validation is not PASS, the agent is looped back. If it tries to merge the PR, that is denied too.
-4. **Yield you can measure.** Four golden cases, scored by a shell script. No LLM judge. No API key.
+If that last part sounds familiar, it’s because I already did something similar in [Causa](https://medium.com/@pablogd/using-cursor-cloud-agents-for-observability-triage-6ad4ad7b215c) for observability triage. This time I pointed that idea at onboarding instead of an incident.
 
-If that sounds like I stole the observability story from [Causa](https://medium.com/@pablogd/using-cursor-cloud-agents-for-observability-triage-6ad4ad7b215c) and pointed it at a platform workflow instead of an incident — yes. That was the point.
+## Kind was getting in the way
 
-## The pastry analogy, continued
+I like Kind. For the first post it made sense: prove that a pod can actually log in to Vault with its Kubernetes identity.
 
-In the first post I compared Cursor Rules to pastry rules (“never mix dry with wet too early”) and Skills to recipes (“how to make a chocolate cake”).
+For a factory, and especially for a Cloud Agent running in a VM, spinning a Kubernetes cluster just to write a Vault policy is… a lot. Nested Kubernetes is not a great substrate for this.
 
-What a bakery also has, and what the copilot was missing, is the rest of the kitchen:
+So the default runtime is now Vault in `-dev` mode. Docker Compose if you have Docker, otherwise the `vault` binary on the host. Platform Terraform only enables the Kubernetes auth mount. The JWT / host / CA bit moved to `terraform/platform-kind`, and you only run that if you still want the pod-login proof.
 
-| Kitchen | Factory |
-|---------|---------|
-| Oven thermometer | **Hooks** — they fire on file edit, shell, MCP, and stop. They do not care whether you remembered the recipe. |
-| Quality check that does not involve tasting | **Evals** — `evals/score.sh` reads checked-in goldens and prints `Yield: 4 passed, 0 failed`. |
-| Kitchen display | **Grafana** — Factory Operations and Vault Onboarding, correlated by `ticket_id`. |
-| Night shift | **Cloud Agents** — move a Linear ticket to *In Progress Cursor* and a VM runs the autonomous path until a draft PR exists. |
+In Cursor you can just say:
 
-The recipe did not change. The kitchen around it did.
+> start the environment
 
-## Runtime: Vault `-dev`, Kind optional
+which runs `./scripts/factory-environment.sh`. Vault is at `http://127.0.0.1:8200`, token `root`. After you apply a request you can still do the same check as last time:
 
-The original demo booted Kind, Helm-installed Vault, then applied platform Terraform that reached into the cluster for a ServiceAccount JWT so Kubernetes auth could be configured for real.
-
-That is still there, behind `task platform:kind`, if you want the pod-login proof. It is no longer the default.
-
-The factory runtime is Vault as a process: Docker Compose service first, `vault server -dev` on the host if Compose is not around. Platform Terraform now only enables the Kubernetes auth *mount*. The JWT / host / CA configuration lives in a separate `terraform/platform-kind` stack, because a Cloud Agent should not have to nest a Kubernetes cluster just to write a Vault policy.
-
-```bash
-# In Cursor: “start the environment”
-./scripts/factory-environment.sh
+```
+vault policy read payments-payments-api
+vault kv get secret/teams/payments/payments-api/config
 ```
 
-Vault is at `http://127.0.0.1:8200` with token `root`. The request module still creates the same three things: KV paths under `secret/teams/<team>/<service>/`, a least-privilege ACL policy, and a Kubernetes auth role. You can `vault policy read` them after apply, same as before.
+Kind is still there, behind `task platform:kind`. It’s optional now, which is the whole point.
 
-Kind did not become wrong. It became optional. Nested Kubernetes is the wrong substrate for this factory.
+## Skills, again ( and this time you can talk to them)
 
-## Operate it in English
+I already used the pastry analogy last time, so I won’t repeat the whole thing. Skills = the recipe, Rules = the bits you never skip, no matter the flavour.
 
-I like Taskfiles. I do not like demos that start with “first remember these four target names”.
+What I was missing is that operating the factory was still a bunch of Taskfile names I had to remember during a demo. I like Taskfiles. I don’t like starting a walkthrough with “ok first you run `task platform:up`, wait, unless you wanted Grafana, then it’s a different target”.
 
-So the factory DX is a small set of Skills that wrap scripts. `go-task` is optional. You can say the same things in Cursor:
+So I added a few skills that are just English:
 
-| You say | What happens |
-|---------|----------------|
-| **start the environment** | Vault `-dev` + kubernetes auth mount |
-| **start observability** | OTel, Prometheus, Loki, Grafana, Jaeger, Vault |
-| **show the dashboard** | Factory Operations + Vault Onboarding URLs |
-| **factory status** | Health of Vault and Grafana |
-| **run evals** | Deterministic yield on golden tickets |
-| **stop the factory** | Tear down compose + host Vault |
+- start the environment
+- start observability
+- show the dashboard
+- factory status
+- run evals
+- stop the factory
 
-Under the hood those skills call `./scripts/factory-environment.sh`, `./evals/score.sh`, `./observability/scripts/up.sh`, and so on. The agent does not have to invent a bootstrap sequence. The operator does not have to become a Taskfile expert.
+They call scripts. `go-task` is optional. Same idea as `ticket-to-spec` / `plan-to-terraform`, just pointed at running the thing rather than delivering one request.
 
-This is the same idea as the original Skills — `ticket-to-spec`, `plan-to-terraform`, `validate-change` — just pointed at *operating* the factory instead of delivering one request.
+## Hooks
 
-## Hooks: the gauges that do not negotiate
+This is the part I wish I had used in the first version.
 
-Rules tell the agent what “good” looks like. Agents are still language models. On a long autonomous run they will occasionally try to be helpful in the wrong direction: merge the PR because the validation *looked* fine, apply Terraform outside the request directory, write a spec that is missing R3.
+Rules are great, but they are still instructions. Agents are still language models. On a long autonomous run they will occasionally try to be helpful in the wrong way: merge the PR because validation *looked* fine, `terraform apply` in the wrong directory, write a spec that’s missing the namespace.
 
-Hooks are the part of Cursor I wish I had used earlier. They are small scripts that run on editor events and return `allow` or `deny`. In this repo they live in `.cursor/hooks.json`:
+Hooks are small scripts that Cursor runs on file edit, before a shell command, before MCP, and when the agent wants to stop. They return allow or deny. Not a suggestion. Deny.
 
-```json
+The ones in this repo look like this:
+
+```
 {
   "version": 1,
   "hooks": {
@@ -110,78 +93,58 @@ Hooks are the part of Cursor I wish I had used earlier. They are small scripts t
 }
 ```
 
-What they actually do:
+`fmt-tf.sh` just runs `terraform fmt` on whatever `.tf` the agent touched. `check-spec.sh` denies the edit if `spec.md` is missing R1–R5 or the ticket provider. `deny-dangerous.sh` blocks `gh pr merge`, push to main, and `terraform apply` outside `requests/<id>/03-terraform` or `terraform/platform`. Same merge ban on the GitHub MCP tool. And `stop-validate.sh` is the important one for the autonomous path: if there’s Terraform but `04-validation/report.md` is not PASS, send the agent back. Loop limit 3.
 
-- **`fmt-tf.sh`** — `terraform fmt` any `.tf` file the agent just edited. Always allow. Quiet hygiene.
-- **`check-spec.sh`** — if the file is a `01-spec/spec.md` and R1–R5 or `ticket_provider` are missing, **deny the edit**. Incomplete tickets do not become specs.
-- **`deny-dangerous.sh`** — no `gh pr merge`, no `git push` to `main`, and `terraform apply` only under `requests/<id>/03-terraform` or `terraform/platform`.
-- **`deny-mcp-merge.sh`** — same merge ban on the GitHub MCP tool. Humans merge after reading `reviewer.md` and `bugbot.md`.
-- **`stop-validate.sh`** — if an autonomous request has Terraform but `04-validation/report.md` is not PASS, send the agent back. Loop limit 3.
+I don’t want an agent telling me the implementation looks correct. That was true for validation in the first post, and it’s the same reason hooks exist here. A rule is something you hope it follows. A hook still works when it doesn’t.
 
-Every deny also emits an OTLP metric (`factory.hook.deny`) when the collector is up. The factory is not only preventing the bad action. It is counting it.
+When the collector is up, denies also go out as an OTLP metric, so you can actually see them in Grafana instead of finding out later that it tried to merge.
 
-This is the difference I keep coming back to with customers. A Rule is a policy you hope the model will follow. A Hook is a control that still works when it does not.
+## Evals
 
-## Evals: yield without an LLM judge
+Same energy as validation. I don’t want to score this by asking another model “did it look right?”.
 
-I do not want to score a software factory by asking another model “did this look right?”. That is how you get a dashboard full of vibes.
+There’s a script, `evals/score.sh`. No API key. It reads artifacts that are already in git:
 
-`evals/score.sh` reads artifacts that are already in git and checks four things:
+- happy path: PE-001 spec fields actually landed in `main.tf` ( service, team, namespace, SA, `config` + `db`)
+- incomplete ticket: missing namespace must not produce Terraform
+- no invented paths: `secret_paths` is exactly what the spec said, not what the agent thought would be useful
+- least privilege: the module policy is read/list under `teams/` only. No create, no delete.
 
-| Case | What it scores |
-|------|----------------|
-| `happy-payments-api` | PE-001 spec fields R1–R5 mapped *verbatim* into `main.tf` |
-| `reject-missing-namespace` | An incomplete ticket fixture must not produce Terraform |
-| `no-invented-paths` | `secret_paths` is exactly `config,db` — no extras the agent thought would be useful |
-| `least-privilege` | Module policy is read/list under `teams/` only. No create, no delete. |
+You say **run evals** in Cursor, or just run the script:
 
-```bash
-# In Cursor: “run evals”
+```
 ./evals/score.sh
 # Yield: 4 passed, 0 failed, 4 total
 ```
 
-No `CURSOR_API_KEY`. No judge prompt. If someone later changes the module to grant `create` on the whole KV mount, yield drops. That is the whole point.
+If someone later “improves” the module and grants `create` on the whole mount, yield drops. That’s the idea.
 
-When observability is up, the same script emits `factory.eval.pass` / `factory.eval.total`. Grafana then has a yield panel that is not a screenshot of a chat.
+## Dashboards
 
-## The operate layer: one Grafana, two dashboards
+This is where Causa comes back.
 
-Autonomous delivery already produced artifacts and a PR. Operators still had no live view of factory yield, cycle time, or Vault after onboard.
+In that post I already had a local stack: OTel, Prometheus, Loki, Grafana, Jaeger. I didn’t want to invent a new console for this repo, so I took the same shape and pointed it at the factory and at Vault.
 
-I already had a local OTel / Grafana / Prometheus stack in [Causa](https://medium.com/@pablogd/using-cursor-cloud-agents-for-observability-triage-6ad4ad7b215c). This repo needed the same shape, pointed at the factory and at Vault, in one Grafana.
+`observability/` is Docker Compose. No Kubernetes. Two dashboards in one Grafana:
 
-`observability/` is Docker Compose. No Kubernetes. Collector, Prometheus, Loki, Jaeger, Grafana, and Vault `-dev`. Two dashboards, correlated by `ticket_id` / `trace_id`:
+- Factory Operations: runs, validation PASS ratio, hook denies, eval yield, duration by ticket
+- Vault Onboarding: is Vault up, HTTP rate, apply events by ticket / service, secret paths created
 
-- **Factory Operations** — runs, validation PASS ratio, hook denies, eval yield, phase duration by ticket, factory logs.
-- **Vault Onboarding** — Vault up, HTTP request rate, apply events by ticket and service, secret paths scaffolded, mixed Vault / factory logs.
+Say **start observability**, then **show the dashboard**. Grafana is `http://127.0.0.1:3000` ( admin/admin). Prometheus scrapes Vault’s `/v1/sys/metrics?format=prometheus`. There’s also Grafana MCP ( read-only) and Prometheus MCP on localhost, so the local agent can answer “what’s factory yield?” with PromQL instead of guessing.
 
-Hooks, `validate-change.sh`, and request apply speak OTLP HTTP via `scripts/factory-otel.sh`. Prometheus scrapes Vault’s `/v1/sys/metrics?format=prometheus`. Grafana MCP (`mcp-grafana --disable-write`) and Prometheus MCP point at localhost, so the *local* agent can answer “what is factory yield?” with PromQL instead of guessing.
+Two caveats, because they always come up:
 
-```bash
-# In Cursor: “start observability” then “show the dashboard”
-./observability/scripts/up.sh
-# Grafana: http://127.0.0.1:3000  (admin / admin)
+Cloud Agents cannot see Grafana on your laptop. The Linear webhook path will open a draft PR. It will not fill these dashboards unless you expose a public OTLP endpoint, which I didn’t do for this version.
+
+And this is still a demo console. Same as last time with Kind: don’t take a screenshot of localhost:3000 to your SRE team as the new production observability platform.
+
+## Let’s actually run it
+
+Three ways, on purpose.
+
+**A. Five minutes, no Docker.** Start Vault, score the goldens, validate PE-001, apply, read the policy. No Kind, no go-task.
+
 ```
-
-Two honest limits, because they matter in a customer conversation:
-
-1. **Cloud Agents cannot see laptop Grafana.** The Linear webhook path delivers a draft PR. It does not fill these dashboards unless you expose a public OTLP endpoint, which is out of scope for v1.
-2. **Compose is the demo console, not production observability.** Same disclaimer as last time: this is a Kind-less laptop factory, not a reason to retire your SRE team.
-
-<!-- Screenshot: Grafana Factory Operations — yield, hook denies, validation PASS ratio -->
-
-<!-- Screenshot: Grafana Vault Onboarding — Vault up, apply events by ticket_id -->
-
-## Three ways to run it
-
-This is the part I wish I had put at the top of the first post. There are now three demos, on purpose.
-
-### A — five minutes, no Docker required
-
-Start Vault `-dev`, score the goldens, validate PE-001 against live Vault, apply, then `vault policy read`. Kind is not involved. go-task is not involved.
-
-```bash
 ./scripts/factory-environment.sh
 ./evals/score.sh
 ./scripts/validate-change.sh PE-001-payments-api
@@ -189,51 +152,37 @@ terraform -chdir=requests/PE-001-payments-api/03-terraform apply -auto-approve
 vault policy read payments-payments-api
 ```
 
-**Pass:** evals 4/4, validate-change PASS, policy shows `teams/payments/payments-api`.
+Pass looks like: evals 4/4, validate-change PASS, policy contains `teams/payments/payments-api`.
 
-### B — Grafana (Docker)
+**B. Grafana.** Docker required. `start observability`, then `show the dashboard`. This is the local operate demo.
 
-`start observability`, then `show the dashboard`. Query Grafana MCP or Prometheus MCP. This is the local-agent operate demo.
+**C. Cloud Agent.** Create a Linear issue with service, team, namespace, SA and secret paths. Move it to **In Progress Cursor**. Watch [cursor.com/agents](https://cursor.com/agents). It follows `AGENTS.md`: create-spec → implement-change → validate-change until PASS → reviewer → Bugbot → draft PR. It does not merge. You still do.
 
-### C — async Cloud Agent (no Grafana)
+The autonomous path was already in the repo from last time. What I added is the wiring: `AGENTS.md`, a ticket status that actually starts a Cloud Agent, and the hooks so that unattended loop can’t skip validation or merge on its own.
 
-Create a Linear issue with service, team, namespace, service account, and secret paths. Move it to **In Progress Cursor**. Watch [cursor.com/agents](https://cursor.com/agents). The Cloud Agent follows `AGENTS.md`: `create-spec` → `implement-change` → `validate-change` until PASS → readonly reviewer → Bugbot → draft PR. It does not merge. A human still does.
-
-The autonomous path was already in the repo (ADR-001). What the factory adds is the wiring: an agent-readable `AGENTS.md`, a ticket status that starts a Cloud Agent, and hooks that keep that unattended loop from skipping validation or merging.
-
-## What did *not* change
-
-This is still specification-driven Vault onboarding. I did not replace the seven phases with a mega-prompt.
+And just to be clear, I didn’t throw away the seven phases. You still get:
 
 ```
 requests/PE-123/
-├── 01-spec/          what was requested
-├── 02-plan/          how it will be implemented
-├── 03-terraform/     the thin module wrapper
-├── 04-validation/    PASS / FAIL evidence
-├── 05-review/        reviewer + Bugbot
-├── 06-pr/            delivery metadata
-└── 07-ticket-update/ traceability back to Linear / Jira
+├── 01-spec/
+├── 02-plan/
+├── 03-terraform/
+├── 04-validation/
+├── 05-review/
+├── 06-pr/
+└── 07-ticket-update/
 ```
 
-Manual path still stops for approval after each phase. Autonomous path still auto-continues through implement and validate, still writes the same artifacts, still requires a human to merge.
-
-The Vault module still copies spec fields verbatim. The agent still must not invent `secret_paths`. Conftest, Terratest, `terraform test`, tflint, trivy — still there in `validate-change`.
-
-The factory is an operate layer on top of a workflow I still trust. That was the design constraint. If you skip it, you get a chatbot that talks to Vault. I have seen that whiteboard. It does not end well.
+Manual path still stops for approval. Autonomous path still writes the same artifacts. The module still copies spec fields as they are. Asking an agent to just “onboard this application to Vault” and hoping for the best is still never a good recipe.
 
 ## So, did it work?
 
-Did I turn a two-week onboarding process into a factory you can start in five minutes? Locally, yes. That is still not the point.
+Did I turn a two-week onboarding process into a factory you start in five minutes? Well, technically yes, but that’s not really the point of this exercise right?.
 
-I still own every persona. The Linear ticket is still mine. Vault `-dev` with token `root` is not your production cluster. Cloud Agents filling a laptop Grafana is a demo limitation I am not going to hand-wave away.
+I still control every persona, the Linear ticket is mine, Vault `-dev` with token `root` is not production, and Cloud Agents filling a laptop Grafana is a limitation I’m not going to pretend isn’t there.
 
-What I wanted to prove this time is narrower, and I think more useful:
+My goal this time was simpler than “replace the platform team”. I wanted to see whether the copilot from the first post could become something you start, score, watch and stop, with controls that are scripts rather than hoping the model behaves.
 
-A spec-driven copilot becomes a factory when you can **start it, score it, watch it, and stop it** — and when the controls that keep it honest are scripts, not vibes.
+I think the answer is the same as last time: yes but, or yes and. Skills are still the recipe, rules are still the pastry laws. Hooks, evals and a Grafana that scrapes both the factory and Vault are what make it feel like a system instead of a chat that got lucky.
 
-Skills are still the recipes. Rules are still the pastry laws. Hooks, evals, and a Grafana that scrapes both the factory and Vault are what let you treat the whole thing as a system instead of a chat you got lucky with.
-
-If you want to try it, the fastest path is [`docs/run-now.md`](https://github.com/pablogd-hashi/sdd-tf-vault-cursor/blob/cursor/software-factory-8d74/docs/run-now.md) on the `cursor/software-factory-8d74` branch. Break it. Replace Vault with something else. Keep the gauges.
-
-*Previously: [Spec-Driven Vault Onboarding with Cursor](https://medium.com/@pablogd/spec-driven-vault-onboarding-with-cursor-1eb95cc5aeaf). Related: [Using Cursor Cloud Agents for Observability Triage](https://medium.com/@pablogd/using-cursor-cloud-agents-for-observability-triage-6ad4ad7b215c).*
+The repo is open source if you want to try it, break it, replace Vault with something else. Fastest path is `docs/run-now.md` on the `cursor/software-factory-8d74` branch.
