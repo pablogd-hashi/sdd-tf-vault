@@ -1,0 +1,41 @@
+version: '3'
+
+# Factory DX — what the start-environment / start-observability skills call.
+
+tasks:
+  environment:
+    desc: "Start Vault -dev and apply platform auth mount"
+    cmds:
+      - task: :platform:up
+
+  observability:
+    desc: "Start OTel / Prometheus / Loki / Grafana / Jaeger / Vault compose stack"
+    cmds:
+      - chmod +x observability/scripts/*.sh scripts/*.sh
+      - observability/scripts/up.sh
+
+  dashboards:
+    desc: "Print (and open) Grafana Factory + Vault dashboards"
+    cmds:
+      - chmod +x observability/scripts/dashboards.sh
+      - observability/scripts/dashboards.sh
+
+  status:
+    desc: "Vault + observability health and dashboard URLs"
+    cmds:
+      - chmod +x observability/scripts/status.sh
+      - observability/scripts/status.sh
+
+  stop:
+    desc: "Stop observability compose and host Vault -dev (does not delete Kind)"
+    cmds:
+      - cmd: observability/scripts/down.sh
+        ignore_error: true
+      - cmd: platform/scripts/vault-dev-stop.sh
+        ignore_error: true
+
+  evals:
+    desc: "Run deterministic factory evals"
+    cmds:
+      - chmod +x evals/score.sh scripts/factory-otel.sh
+      - evals/score.sh

@@ -29,6 +29,9 @@ includes:
   request:
     taskfile: ./taskfiles/request.yml
     dir: '{{.ROOT_DIR}}'
+  factory:
+    taskfile: ./taskfiles/factory.yml
+    dir: '{{.ROOT_DIR}}'
 
 tasks:
   default:
@@ -40,18 +43,28 @@ tasks:
     silent: true
     cmds:
       - |
-        echo "Platform Engineering Copilot — task runner"
+        echo "Prefer Cursor skills over raw task names: start-environment,"
+        echo "start-observability, show-dashboard, factory-status, stop-factory, run-evals."
         echo ""
-        echo "Flows (each supports: up | down | reset | url):"
-        echo "  platform   Kind cluster + Vault (dev) + Kubernetes auth"
+        echo "Flows:"
+        echo "  factory    Vault -dev + observability (Grafana/OTel) — default"
+        echo "  platform   Vault -dev (or optional Kind via platform:kind)"
         echo "  request    Per-request Terraform (REQUEST=<id>)"
         echo ""
+        echo "Factory flow:"
+        echo "  task factory:environment     Start Vault -dev + auth mount"
+        echo "  task factory:observability   Start Grafana / Prometheus / OTel / Vault"
+        echo "  task factory:dashboards      Print Factory + Vault Grafana URLs"
+        echo "  task factory:status          Health + URLs"
+        echo "  task factory:stop            Tear down compose + host Vault"
+        echo "  task factory:evals           Deterministic yield evals"
+        echo ""
         echo "Platform flow:"
-        echo "  task platform:up       Create cluster, install Vault, apply K8s auth"
-        echo "  task platform:down     Destroy platform TF and delete the cluster"
-        echo "  task platform:reset    Tear down and bring back up"
-        echo "  task platform:url      Print the Vault URL"
-        echo "  task platform:status   Show Vault health"
+        echo "  task platform:up             Vault -dev + Kubernetes auth mount (no Kind)"
+        echo "  task platform:kind           Optional Kind cluster + Helm Vault + JWT config"
+        echo "  task platform:down           Stop host Vault -dev"
+        echo "  task platform:url            Print the Vault URL"
+        echo "  task platform:status         Show Vault health"
         echo ""
         echo "Request flow (default REQUEST={{.REQUEST}}):"
         echo "  task request:up REQUEST=<id>     Apply the request's Terraform"
@@ -60,8 +73,10 @@ tasks:
         echo "  task request:url REQUEST=<id>    Print Vault URL + outputs"
         echo "  task request:list                List available requests"
         echo ""
-        echo "Top-level shortcuts (operate on the platform flow):"
-        echo "  task up | task down | task reset | task url"
+        echo "Top-level shortcuts:"
+        echo "  task up       factory:environment (Vault -dev)"
+        echo "  task evals    factory:evals"
+        echo "  task down     platform:down"
         echo ""
         echo "Validation & tests:"
         echo "  task validate REQUEST=<id>         Legacy validation pipeline"
@@ -72,9 +87,14 @@ tasks:
         echo "  task check-phase REQUEST=<id>      Phase-order gate check"
 
   up:
-    desc: "Shortcut for platform:up"
+    desc: "Shortcut for factory:environment (Vault -dev)"
     cmds:
-      - task: platform:up
+      - task: factory:environment
+
+  evals:
+    desc: "Run deterministic factory evals"
+    cmds:
+      - task: factory:evals
 
   down:
     desc: "Shortcut for platform:down"
