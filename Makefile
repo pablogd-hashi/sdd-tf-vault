@@ -1,4 +1,4 @@
-.PHONY: bootstrap teardown platform-init platform-apply platform-destroy validate validate-change validate-all test test-local check-phase demo help
+.PHONY: bootstrap teardown platform-init platform-apply platform-destroy validate validate-change validate-all test test-local check-phase demo evals help
 
 ROOT_DIR := $(shell pwd)
 REQUEST ?= PE-001-payments-api
@@ -6,18 +6,18 @@ KIND_CLUSTER_NAME ?= pe-copilot
 
 help:
 	@echo "Platform Engineering Copilot — local commands"
+	@echo "Prefer Cursor skills: start-environment, start-observability, show-dashboard,"
+	@echo "factory-status, stop-factory, run-evals."
 	@echo ""
-	@echo "  make bootstrap          Create Kind cluster + Vault dev + port-forward"
+	@echo "  make bootstrap          Optional Kind cluster + Helm Vault"
 	@echo "  make teardown           Delete Kind cluster"
-	@echo "  make platform-init      Terraform init for platform layer"
-	@echo "  make platform-apply     Apply platform Terraform (K8s auth)"
+	@echo "  make platform-init      Terraform init for platform layer (Vault-only)"
+	@echo "  make platform-apply     Apply platform Terraform (K8s auth mount)"
 	@echo "  make platform-destroy   Destroy platform Terraform"
-	@echo "  make validate REQUEST=         Validate a request (legacy: fmt, validate, plan)"
-	@echo "  make validate-change REQUEST=  Extended validation (fmt, validate, test, conftest, trivy)"
-	@echo "  make validate-all              Validate all requests (legacy pipeline)"
-	@echo "  make test               Run Terratest (skips if Vault unavailable)"
-	@echo "  make test-local         Run Terratest against local Vault"
-	@echo "  make check-phase REQUEST=  Check phase order gates"
+	@echo "  make evals              Deterministic factory yield tests"
+	@echo "  make validate REQUEST=         Validate a request (legacy)"
+	@echo "  make validate-change REQUEST=  Extended validation"
+	@echo "  make test / test-local  Terratest"
 	@echo "  make demo               Print demo walkthrough path"
 
 bootstrap:
@@ -30,11 +30,16 @@ teardown:
 platform-init:
 	cd terraform/platform && terraform init
 
-platform-apply: bootstrap platform-init
+platform-apply: platform-init
+	./scripts/ensure-vault-ready.sh
 	cd terraform/platform && terraform apply -auto-approve
 
 platform-destroy:
 	cd terraform/platform && terraform destroy -auto-approve
+
+evals:
+	chmod +x evals/score.sh scripts/factory-otel.sh
+	./evals/score.sh
 
 validate:
 	./scripts/ensure-vault-ready.sh || true

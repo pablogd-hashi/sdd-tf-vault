@@ -1,6 +1,6 @@
 # Setup Guide
 
-Everything in this repository runs locally. No cloud resources are provisioned. The Terraform layers below sit on top of a local Kind + Vault runtime:
+Everything in this repository runs locally. No cloud resources are provisioned. The factory default is **Vault `-dev`** (compose or host binary). Kind is optional.
 
 [![Infrastructure layers](diagrams/05-infrastructure-layers.svg)](https://www.figma.com/board/1RbIQpZgVRQr2TzsKe2SiZ)
 
@@ -8,15 +8,15 @@ Everything in this repository runs locally. No cloud resources are provisioned. 
 
 | Tool | Minimum version | Install |
 |------|-----------------|---------|
-| Docker | 24+ | [docker.com](https://www.docker.com/) |
-| Kind | 0.22+ | `brew install kind` |
-| kubectl | 1.28+ | `brew install kubectl` |
-| Helm | 3.14+ | `brew install helm` |
+| Docker | 24+ | [docker.com](https://www.docker.com/) — required for Grafana/observability |
 | Terraform | 1.5+ | `brew install terraform` |
 | Go | 1.21+ | `brew install go` |
 | Task | 3.x | `brew install go-task` |
+| Vault CLI | 1.15+ | `brew install vault` (optional if Docker provides Vault) |
+| Kind / kubectl / Helm | — | Optional Kind path only |
 | tflint | 0.50+ | `brew install tflint` (optional) |
-| Vault CLI | 1.15+ | `brew install vault` (optional) |
+
+Prefer Cursor skills (**start the environment**, **start observability**) over remembering these tools.
 
 ## Environment configuration
 
@@ -27,25 +27,27 @@ cp .env.example .env
 
 Never commit `.env`. Vault credentials for dev mode are documented in bootstrap output (`root` token).
 
-## Bootstrap local platform
+## Bootstrap factory (no Kind)
+
+In Cursor say **start observability** (full stack) or **start the environment** (Vault only).
+
+Equivalent Taskfile:
 
 ```bash
-task platform:up
+task factory:environment      # Vault -dev + kubernetes auth mount
+task factory:observability    # Grafana, Prometheus, OTel, Loki, Jaeger, Vault
+task factory:status
 ```
 
-This runs three steps in sequence:
+This enables the kubernetes auth **mount** at `auth/kubernetes`. Cluster JWT config is only applied on the optional Kind path (`task platform:kind`).
 
-1. Create a Kind cluster named `pe-copilot`, install Vault in dev mode via Helm, and start a port-forward to `http://127.0.0.1:8200`
-2. Apply platform Terraform — enables Kubernetes auth backend at `auth/kubernetes` and KV v2 mount at `secret/`
-3. Print the Vault URL
+Vault: `http://127.0.0.1:8200` (token `root`). Grafana: `http://127.0.0.1:3000` (admin/admin).
 
-You can also run the steps individually:
+### Optional Kind path
 
 ```bash
-task platform:bootstrap   # cluster + Vault + port-forward only
-task platform:apply       # Terraform only
-task platform:url         # print URL
-task platform:status      # check Vault health
+task platform:kind            # Kind + Helm Vault + JWT reviewer config
+task platform:teardown-kind
 ```
 
 Verify:
@@ -87,6 +89,15 @@ cp .cursor/mcp.json.example .cursor/mcp.json
 3. Complete OAuth when prompted
 4. See [linear-project-setup.md](linear-project-setup.md) for team/issue configuration
 5. Set `TICKET_PROVIDER=linear` in `.env` when Linear is the default intake
+
+### Grafana and Prometheus (local operate demo)
+
+After **start observability**, Grafana MCP and Prometheus MCP talk to localhost. Copy `.cursor/mcp.json.example` — it already includes:
+
+- `grafana` — `uvx mcp-grafana --disable-write` at `http://localhost:3000` (admin/admin)
+- `prometheus` — `npx prometheus-mcp` at `http://localhost:9090`
+
+Reload MCP servers in Cursor. Cloud Agents cannot reach these URLs.
 
 ### GitHub
 

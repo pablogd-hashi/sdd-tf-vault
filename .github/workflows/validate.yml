@@ -7,6 +7,10 @@ on:
       - 'requests/**'
       - 'tests/**'
       - 'scripts/**'
+      - 'evals/**'
+      - 'observability/**'
+      - '.cursor/hooks.json'
+      - '.cursor/hooks/**'
   push:
     branches: [main]
 
@@ -28,6 +32,12 @@ jobs:
       - name: Validate platform Terraform
         run: |
           cd terraform/platform
+          terraform init -backend=false
+          terraform validate
+
+      - name: Validate platform-kind Terraform
+        run: |
+          cd terraform/platform-kind
           terraform init -backend=false
           terraform validate
 
@@ -93,3 +103,12 @@ jobs:
         run: |
           chmod +x scripts/*.sh
           ./scripts/check-phase-order.sh PE-001-payments-api
+
+  factory-evals:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deterministic factory evals
+        run: |
+          chmod +x evals/score.sh scripts/*.sh
+          ./evals/score.sh

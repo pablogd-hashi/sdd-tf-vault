@@ -2,7 +2,24 @@
 
 An open-source reference implementation showing how to implement software delivery in regulated platform engineering teams.
 
-This repository demonstrates a **specification-driven workflow** that converts approved infrastructure tickets (Jira or Linear) into production-ready Terraform — with every phase independently reviewable.
+This repository demonstrates a **specification-driven software factory** that converts infrastructure tickets (Jira or Linear) into production-ready Terraform — with hooks, evals, and a Grafana operate layer.
+
+## Operate the factory (no Taskfile memorization)
+
+In Cursor, say:
+
+| You say | What happens |
+|---------|----------------|
+| **start the environment** | Vault `-dev` + kubernetes auth mount (no Kind) |
+| **start observability** | OTel, Prometheus, Loki, Grafana, Jaeger, Vault |
+| **show the dashboard** | Factory Operations + Vault Onboarding |
+| **factory status** | Health of Vault and Grafana |
+| **run evals** | Deterministic yield on golden tickets |
+| **stop the factory** | Tear down compose + host Vault |
+
+Grafana: http://127.0.0.1:3000 (admin/admin) — [Factory Operations](http://127.0.0.1:3000/d/factory-operations/factory-operations) and [Vault Onboarding](http://127.0.0.1:3000/d/vault-onboarding/vault-onboarding).
+
+Async intake: move a Linear ticket to **In Progress Cursor**; a Cloud Agent runs the autonomous path. That path does not fill laptop Grafana.
 
 ## Workflow
 
@@ -40,13 +57,14 @@ For each approved **Vault service onboarding** request, the copilot produces:
 
 | Component | Purpose |
 |-----------|---------|
-| [Kind](https://kind.sigs.k8s.io/) | Local Kubernetes cluster |
-| [Vault OSS](https://www.vaultproject.io/) | Secrets management (dev mode) |
+| [Vault OSS](https://www.vaultproject.io/) | Secrets management (`-dev` binary or compose — factory default) |
+| [Kind](https://kind.sigs.k8s.io/) | Optional laptop path to prove a pod can log in |
+| [Grafana](https://grafana.com/) + Prometheus + Loki + Jaeger + OTel | Factory + Vault dashboards |
 | [Terraform OSS](https://www.terraform.io/) | Infrastructure as code |
 | [Jira Free](https://www.atlassian.com/software/jira/free) or [Linear](https://linear.app/) | Infrastructure request intake |
 | [GitHub Free](https://github.com/) | Pull request delivery |
-| [Slack](https://slack.com/) | Workflow notifications and ticket confirmations (optional) |
-| [Cursor](https://cursor.com/) | Rules, Skills, MCP, Bugbot |
+| [Slack](https://slack.com/) | Workflow notifications (optional) |
+| [Cursor](https://cursor.com/) | Rules, Skills, Hooks, MCP, Bugbot |
 
 No cloud resources are provisioned. No enterprise licences required.
 
@@ -69,14 +87,18 @@ Every stack is modelled as a **flow** that supports `up`, `down`, `reset`, and `
 
 Run `task` (or `task help`) to see everything. Top-level `task up`/`down`/`reset`/`url` are shortcuts for the `platform` flow.
 
-### Bootstrap local platform
+### Bootstrap factory runtime (no Kind)
+
+Say **start the environment** in Cursor, or:
 
 ```bash
 cp .env.example .env
-task platform:up      # Kind + Vault dev + port-forward + Kubernetes auth
-task platform:url     # print the Vault URL
-task test-local       # Terratest against local Vault
+task factory:environment      # Vault -dev + kubernetes auth mount
+task factory:observability    # Grafana / Prometheus / OTel (includes Vault)
+task factory:status
 ```
+
+Optional Kind path (pod-login proof only): `task platform:kind`.
 
 ### Provision a request and read its URL/outputs
 
@@ -101,14 +123,13 @@ See [docs/setup.md](docs/setup.md) for full setup including MCP configuration.
 
 ```
 requests/          One folder per ticket; phases are numbered subdirs
-terraform/         Platform bootstrap + reusable vault-service-onboard module
-platform/          Kind cluster config + Helm values + bootstrap scripts
-.cursor/           Rules and Skills that encode the workflow gates
-docs/              Setup guide, demo script, architecture, autonomous delivery, ADRs
-docs/diagrams/     FigJam-authored SVG diagrams (see docs/figma-diagrams.md)
-policies/          Conftest Rego policies for plan validation
-.cursor/agents/    Custom subagents (reviewer)
-.cursor/BUGBOT.md  Bugbot PR review rules
+terraform/         Platform (Vault-only) + optional platform-kind + vault-service-onboard
+platform/          Vault -dev config + optional Kind/Helm scripts
+observability/     Compose: OTel, Prometheus, Loki, Grafana, Jaeger, Vault
+evals/             Deterministic factory yield tests
+.cursor/           Rules, Skills, Hooks, MCP example
+docs/              Setup, demo, architecture, ADRs
+policies/          Conftest Rego policies
 tests/             Terratest integration tests
 ```
 
@@ -117,13 +138,16 @@ tests/             Terratest integration tests
 | Integration | Role |
 |-------------|------|
 | **Cursor Rules** | Enforce phase order, spec format, Terraform conventions |
-| **Cursor Skills** | Deterministic procedures for each workflow step |
+| **Cursor Skills** | Factory DX (`start-environment`, …) plus workflow phases |
+| **Cursor Hooks** | Deterministic gauges — fmt, spec fields, deny merge, validation stop |
 | **Cursor Subagents** | Readonly reviewer for autonomous delivery evaluation |
 | **Jira MCP** (Atlassian) | Read Jira tickets, post completion comments |
 | **Linear MCP** | Read Linear issues, post completion comments |
 | **GitHub MCP** | Create branches and pull requests |
-| **Slack MCP** | Post workflow notifications, query pending tickets, confirm ticket creation |
-| **Bugbot** | Mandatory code review subagent before PR merge (see `.cursor/BUGBOT.md`) |
+| **Grafana MCP** | Dashboards and PromQL via Grafana (local demo) |
+| **Prometheus MCP** | Raw PromQL against localhost:9090 |
+| **Slack MCP** | Workflow notifications (optional) |
+| **Bugbot** | Mandatory code review before PR merge |
 
 Skills are **explicitly invoked** — the agent does not autonomously skip gates in the manual workflow. The autonomous path (`create-spec` → `implement-change` → `validate-change`) runs explicit loops documented in [docs/autonomous-delivery.md](docs/autonomous-delivery.md).
 

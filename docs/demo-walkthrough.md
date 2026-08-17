@@ -1,6 +1,27 @@
-# Demo Walkthrough (~15 minutes)
+# Demo Walkthrough
 
-End-to-end demonstration of the Platform Engineering Copilot workflow. Each phase below produces one artifact in `requests/PE-002-<service>/`.
+Two beats: **operate the factory in English** (local Grafana), then the original **gated IDE walkthrough**.
+
+## Factory demo (local agent, ~10 minutes)
+
+Do not memorize `task` names. In Cursor, say:
+
+1. **start observability** — Vault `-dev` + Grafana/Prometheus/OTel
+2. **show the dashboard** — Factory Operations + Vault Onboarding
+3. **run evals** — yield on golden tickets
+4. Use Grafana MCP / Prometheus MCP: "what is factory yield?" / `query_prometheus`
+
+Optional: **start the environment** if you only want Vault without Grafana.
+
+Tear down: **stop the factory** (does not delete Kind).
+
+Async beat (no Grafana): move a Linear ticket to **In Progress Cursor**. A Cloud Agent runs `create-spec` → validation → draft PR per `AGENTS.md`.
+
+---
+
+# Gated IDE walkthrough (~15 minutes)
+
+End-to-end demonstration of the Platform Engineering Copilot **manual** workflow. Each phase below produces one artifact in `requests/PE-002-<service>/`.
 
 [![Seven-phase SDD workflow](diagrams/01-workflow-phases.svg)](https://www.figma.com/board/1RbIQpZgVRQr2TzsKe2SiZ)
 
@@ -8,9 +29,10 @@ End-to-end demonstration of the Platform Engineering Copilot workflow. Each phas
 
 ```bash
 cp .env.example .env
-task platform:up   # Kind cluster + Vault dev + Kubernetes auth Terraform
+# In Cursor say: start observability
+# (or: start the environment — Vault only, no Grafana)
 cp .cursor/mcp.json.example .cursor/mcp.json
-# Authenticate Atlassian (or Linear) + GitHub MCP in Cursor
+# Authenticate Linear or Atlassian + GitHub MCP; Grafana/Prometheus MCP use localhost
 ```
 
 Golden example (pre-built): `requests/PE-001-payments-api/`

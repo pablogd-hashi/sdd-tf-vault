@@ -52,9 +52,12 @@ Approver: platform-lead
 | Status | Maps to repo phase |
 |--------|-------------------|
 | To Do | Ticket filed |
-| In Progress | Spec/plan in progress |
+| In Progress | Human working the ticket in the IDE (manual gated path) |
+| **In Progress, agents** | Cursor webhook launches a Cloud Agent — autonomous factory path |
 | In Review | PR open |
 | Done | Merged and Jira updated |
+
+Add the agents status if you wire a Cursor webhook to Jira. Cloud Agents do not fill laptop Grafana; use the local agent and **start observability** for dashboards.
 
 ## Atlassian MCP in Cursor
 
