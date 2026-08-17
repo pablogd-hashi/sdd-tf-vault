@@ -13,7 +13,6 @@ Report Vault, Prometheus, Grafana, Jaeger, Loki, and OTLP health plus dashboard 
 
 ```bash
 ./observability/scripts/status.sh
-# or: task factory:status
 ```
 
 2. Summarize which components are UP vs DOWN in a short list.

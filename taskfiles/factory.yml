@@ -40,3 +40,9 @@ tasks:
     cmds:
       - chmod +x evals/score.sh scripts/factory-otel.sh
       - evals/score.sh
+
+  local-demo:
+    desc: "Full local IDE demo (skills call scripts/run-local-demo.sh)"
+    cmds:
+      - chmod +x scripts/run-local-demo.sh scripts/apply-request.sh
+      - scripts/run-local-demo.sh

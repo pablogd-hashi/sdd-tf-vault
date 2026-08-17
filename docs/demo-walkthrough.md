@@ -1,17 +1,18 @@
 # Demo Walkthrough
 
-**Start here for a live test:** [run-now.md](run-now.md) (five minutes, scripts, no go-task).
+**Start here for a live test:** [run-now.md](run-now.md) — in Cursor say **run the local demo**.
 
 Two longer beats: **operate the factory in English** (local Grafana), then the original **gated IDE walkthrough**.
 
 ## Factory demo (local agent, ~10 minutes)
 
-Do not memorize `task` names. In Cursor, say:
+Do not memorize `task` names. Docker Desktop must be running. In Cursor, say:
 
-1. **start observability** — Vault `-dev` + Grafana/Prometheus/OTel
+1. **run the local demo** — Grafana + Vault + evals + apply PE-001
 2. **show the dashboard** — Factory Operations + Vault Onboarding
-3. **run evals** — yield on golden tickets
-4. Use Grafana MCP / Prometheus MCP: "what is factory yield?" / `query_prometheus`
+3. **connect grafana mcp** if MCP is not loaded yet, then "list Grafana dashboards"
+
+Or the same pieces one skill at a time: **start observability** → **run evals** → **validate PE-001** → **apply onboarding** → **factory status**.
 
 Optional: **start the environment** if you only want Vault without Grafana.
 

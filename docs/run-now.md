@@ -1,88 +1,52 @@
-# Run a test right now
+# Run a test from Cursor IDE
 
-Two tests. Start with **A** (no Docker). Do **B** when Docker Desktop is running if you want Grafana.
+Everything is a **skill**. Do not memorize `task` or shell. This path is **local Cursor IDE** (laptop Docker). A Cloud Agent cannot start laptop Grafana.
 
-In Cursor you can say the skill names. Equivalents are scripts — **go-task is optional**.
+## Green light — one prompt
 
-## A — five minutes (Vault + evals + golden onboard)
+1. Check out this branch.
+2. Start **Docker Desktop** and wait until it is idle (`docker info` works).
+3. Open the repo in Cursor. Agent chat (local), not a Cloud Agent.
+4. Say:
 
-From the repo root, on branch `cursor/software-factory-8d74`:
+> **run the local demo**
 
-```bash
-# 1. Factory runtime (Vault -dev, no Kind)
-./scripts/factory-environment.sh
+That skill starts Grafana + Vault, runs evals, validates and applies `PE-001-payments-api`, then prints dashboard URLs.
 
-# 2. Yield (no API key)
-./evals/score.sh
+**Pass:** evals 4/4, validate-change PASS, Grafana at http://127.0.0.1:3000 (`admin` / `admin`).
 
-# 3. Validate the golden request against live Vault
-./scripts/validate-change.sh PE-001-payments-api
+Optional first time: **connect observability mcp**, then reload MCP in Cursor.
 
-# 4. Apply onboarding (creates policy, k8s auth role, KV paths)
-terraform -chdir=requests/PE-001-payments-api/03-terraform init -input=false
-terraform -chdir=requests/PE-001-payments-api/03-terraform apply -auto-approve
+## Same demo, step by step
 
-# 5. Confirm in Vault
-export VAULT_ADDR=http://127.0.0.1:8200 VAULT_TOKEN=root
-vault policy read payments-payments-api
-vault read auth/kubernetes/role/payments-payments-api
-vault kv get secret/teams/payments/payments-api/config
-```
+Say these in order (each is a skill):
 
-In Cursor, the same sequence is:
-
-1. **start the environment**
+1. **start observability**
 2. **run evals**
-3. “validate-change PE-001-payments-api, then apply that request’s Terraform”
+3. **validate PE-001-payments-api**
+4. **apply onboarding**
+5. **show the dashboard**
+6. **factory status**
 
-**Pass:** evals 4/4, validate-change PASS, `vault policy read` shows `teams/payments/payments-api`.
+Tear down: **stop the factory**
 
-Tear down Vault only:
+| You say | Skill |
+|---------|--------|
+| run the local demo | `run-local-demo` |
+| start observability | `start-observability` |
+| start the environment | `start-environment` (Vault only, no Grafana) |
+| run evals | `run-evals` |
+| validate PE-001 | `validate-request` |
+| apply onboarding | `apply-onboarding` |
+| show the dashboard | `show-dashboard` |
+| factory status | `factory-status` |
+| connect grafana mcp | `connect-observability-mcp` |
+| stop the factory | `stop-factory` |
 
-```bash
-./platform/scripts/vault-dev-stop.sh
-```
+## If Grafana is connection refused
 
-(Compose Vault is stopped with **stop the factory** / `./observability/scripts/down.sh`.)
+Docker is not running, or you have not said **start observability** / **run the local demo** yet. Host Vault (`start the environment`) does **not** bind `:3000`.
 
-## B — Grafana dashboards (Docker required)
+## Async Cloud Agent (no Grafana)
 
-```bash
-./observability/scripts/up.sh
-./observability/scripts/dashboards.sh
-```
-
-Or say **start observability** then **show the dashboard**.
-
-| URL | Login |
-|-----|--------|
-| http://127.0.0.1:3000 | admin / admin |
-| [Factory Operations](http://127.0.0.1:3000/d/factory-operations/factory-operations) | |
-| [Vault Onboarding](http://127.0.0.1:3000/d/vault-onboarding/vault-onboarding) | |
-| http://127.0.0.1:9090 | Prometheus |
-
-Copy MCP so the local agent can query them:
-
-```bash
-cp .cursor/mcp.json.example .cursor/mcp.json
-# reload MCP in Cursor
-```
-
-Then: “list Grafana dashboards” or “PromQL: up{job=\"vault\"}”.
-
-Cloud Agents cannot see laptop Grafana. This path is **local IDE / local agent only**.
-
-## C — async Cloud Agent (no Grafana)
-
-1. Create a Linear issue with service, team, namespace, SA, secret paths.
-2. Move it to **In Progress Cursor**.
-3. Watch [cursor.com/agents](https://cursor.com/agents) — it should open a draft PR.
-
-## If something is already running
-
-```bash
-./observability/scripts/status.sh
-curl -sf http://127.0.0.1:8200/v1/sys/health && echo Vault_OK
-```
-
-Host Vault `-dev` from a previous session is enough for test **A**. You do not need to restart it unless `curl` fails.
+Move a Linear ticket to **In Progress Cursor**. That path uses `create-spec` → draft PR. It does not fill laptop Grafana.

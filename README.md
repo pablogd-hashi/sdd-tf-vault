@@ -2,28 +2,24 @@
 
 Specification-driven **software factory** for Vault service onboarding: tickets become Terraform, with hooks, evals, and Grafana.
 
-**Test it now:** [docs/run-now.md](docs/run-now.md) — five minutes, no Kind, no go-task.
+**Test it now (Cursor IDE):** start Docker Desktop, then say **run the local demo**. Details: [docs/run-now.md](docs/run-now.md).
 
-## Operate the factory (no Taskfile memorization)
+## Operate the factory (skills only)
 
-In Cursor, say:
+In Cursor Agent chat, say:
 
 | You say | What happens |
 |---------|----------------|
+| **run the local demo** | Grafana + Vault + evals + apply PE-001 |
 | **start the environment** | Vault `-dev` + kubernetes auth mount (no Kind) |
 | **start observability** | OTel, Prometheus, Loki, Grafana, Jaeger, Vault |
+| **run evals** | Deterministic yield on golden tickets |
+| **validate PE-001** | Local validate-change (no ticket post) |
+| **apply onboarding** | Policy, k8s role, KV paths on local Vault |
 | **show the dashboard** | Factory Operations + Vault Onboarding |
 | **factory status** | Health of Vault and Grafana |
-| **run evals** | Deterministic yield on golden tickets |
+| **connect grafana mcp** | Localhost Grafana + Prometheus MCP |
 | **stop the factory** | Tear down compose + host Vault |
-
-Same thing from a shell (scripts; `task` is optional):
-
-```bash
-./scripts/factory-environment.sh    # Vault
-./evals/score.sh                    # yield
-./observability/scripts/up.sh       # Grafana — needs Docker
-```
 
 Grafana: http://127.0.0.1:3000 (admin/admin) — [Factory Operations](http://127.0.0.1:3000/d/factory-operations/factory-operations) and [Vault Onboarding](http://127.0.0.1:3000/d/vault-onboarding/vault-onboarding).
 

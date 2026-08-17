@@ -12,12 +12,13 @@ Do **not** create a Kind cluster. Kind is the optional `platform:kind` path only
 ## Steps
 
 1. Confirm Docker is running, or that the `vault` binary is on PATH.
-2. Run (go-task optional):
+2. Run:
 
 ```bash
 ./scripts/factory-environment.sh
-# or: task factory:environment
 ```
+
+For Grafana as well, the user should say **start observability** or **run the local demo** instead.
 
 3. Report the Vault URL (default `http://127.0.0.1:8200`, token `root`).
 4. If it failed, run `./observability/scripts/status.sh` and show the error.

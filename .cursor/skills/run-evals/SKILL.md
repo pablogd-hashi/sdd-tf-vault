@@ -20,8 +20,9 @@ Score checked-in golden artifacts. No `CURSOR_API_KEY` required.
 
 ```bash
 ./evals/score.sh
-# or: task factory:evals
 ```
+
+For Grafana + evals + apply in one shot, prefer **run the local demo**.
 
 2. Report PASS/FAIL per case and the yield line (`N passed, M failed`).
 3. If observability is up, scores are also emitted as `factory.eval.pass` / `factory.eval.total` to OTel.

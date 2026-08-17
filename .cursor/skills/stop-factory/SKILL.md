@@ -14,7 +14,6 @@ Tear down the local factory runtime.
 ```bash
 ./observability/scripts/down.sh || true
 ./platform/scripts/vault-dev-stop.sh || true
-# or: task factory:stop
 ```
 
 2. Confirm Grafana (`:3000`) and Vault (`:8200`) are no longer reachable, or report leftover processes.

@@ -16,7 +16,7 @@ Everything in this repository runs locally. No cloud resources are provisioned. 
 | Kind / kubectl / Helm | — | Optional Kind path only |
 | tflint | 0.50+ | `brew install tflint` (optional) |
 
-Prefer Cursor skills (**start the environment**, **start observability**) over remembering these tools.
+Prefer Cursor skills (**run the local demo**, **start observability**) over remembering these tools.
 
 ## Environment configuration
 
@@ -29,7 +29,7 @@ Never commit `.env`. Vault credentials for dev mode are documented in bootstrap 
 
 ## Bootstrap factory (no Kind)
 
-**Run a test now:** [run-now.md](run-now.md) (scripts, go-task optional).
+**Run a test now:** [run-now.md](run-now.md) — say **run the local demo**.
 
 In Cursor say **start observability** (full stack) or **start the environment** (Vault only).
 
