@@ -10,7 +10,7 @@ Convert a Jira or Linear infrastructure request into `requests/<ticket-id>/01-sp
 
 ## Prerequisites
 
-- For **jira**: Atlassian Cursor **plugin** (Jira). Not MCP.
+- For **jira**: Atlassian Cursor **plugin** on `edsefsonytv.atlassian.net`, project PE. Not MCP. Not `agentic-workflow-demo`.
 - For **linear**: Linear plugin or Linear MCP
 - For **pasted**: the user message is the ticket
 - Ticket with required fields (see `ticket-schema` rule)

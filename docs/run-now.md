@@ -4,8 +4,8 @@ Everything is a **skill**. Do not memorize `task` or shell. This path is **local
 
 ## Green light — one prompt
 
-1. Check out this branch.
-2. Start **Docker Desktop** and wait until it is idle (`docker info` works).
+1. Check out **`cursor/software-factory-8d74`** (not `main`). In Agent chat: “switch to branch cursor/software-factory-8d74” or run `git checkout cursor/software-factory-8d74`.
+2. Start **Docker Desktop** only if you want Grafana.
 3. Open the repo in Cursor. Agent chat (local), not a Cloud Agent.
 4. Say:
 

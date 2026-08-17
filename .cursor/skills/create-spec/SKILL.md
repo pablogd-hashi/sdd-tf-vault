@@ -13,7 +13,7 @@ This skill is the entry point for specification-driven autonomous delivery. It d
 ## Prerequisites
 
 - Ticket with required fields (see `ticket-schema` rule)
-- Provider: `pasted` if the user pasted the fields. Otherwise **jira** via the Atlassian Cursor **plugin** (not MCP), or **linear** via the Linear plugin.
+- Provider: `pasted` if the user pasted the fields. Otherwise **jira** via the Atlassian plugin on `edsefsonytv.atlassian.net` (project PE), or **linear**.
 - Feature branch: `pe/<ticket>-<service>`
 
 ## Provider → source mapping

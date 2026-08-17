@@ -5,7 +5,7 @@ Configure a Jira Free project for Platform Engineering infrastructure requests.
 ## Create project
 
 1. Go to [Jira](https://www.atlassian.com/software/jira/free) and create a free site
-2. Create project **PE** (Platform Engineering)
+2. Create project **PE** (Platform Engineering) on **https://edsefsonytv.atlassian.net** (board 34).
 3. Use **Kanban** or **Team-managed** template
 
 ## Issue type
@@ -67,7 +67,7 @@ If the hook already launches Cloud Agents, **replace the automation prompt** wit
 
 ## Atlassian plugin in Cursor (blog path)
 
-Enable the **Atlassian** marketplace plugin. This repo turns it on in `.cursor/settings.json`. Authorize the Jira site where PE tickets live.
+Enable the **Atlassian** marketplace plugin. This repo turns it on in `.cursor/settings.json`. Authorize **https://edsefsonytv.atlassian.net** (project PE, [board 34](https://edsefsonytv.atlassian.net/jira/software/projects/PE/boards/34)). If the plugin or MCP is on `agentic-workflow-demo.atlassian.net`, it is the wrong cloud — re-auth.
 
 Local Agent chat can then `get` PE-9 and **add a comment** the same way as the first blog. That does **not** use Settings → MCP.
 

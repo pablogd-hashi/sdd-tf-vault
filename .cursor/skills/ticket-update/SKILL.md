@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 Post a completion comment and save the draft to `07-ticket-update/comment.md`.
 
-**Jira in Cursor IDE (the blog path):** use the installed **Atlassian plugin** (Jira tools). That is not Settings → MCP. The plugin is already authenticated to the user's PE site. Do **not** call Atlassian MCP (`getJiraIssue` / `addCommentToJiraIssue` on `mcp.atlassian.com`) if plugin tools work — MCP in Cloud Agents was bound to the wrong site (`agentic-workflow-demo.atlassian.net`).
+**Jira site (required):** `https://edsefsonytv.atlassian.net` — project PE, [board 34](https://edsefsonytv.atlassian.net/jira/software/projects/PE/boards/34). Cloud id `c829f01c-71dd-4abe-a246-4def3dfa5c2b`. Never use `agentic-workflow-demo.atlassian.net`.
 
 **Linear:** Linear plugin or Linear MCP.
 

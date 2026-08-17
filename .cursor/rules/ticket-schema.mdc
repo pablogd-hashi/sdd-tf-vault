@@ -7,7 +7,7 @@ alwaysApply: false
 
 Provider-agnostic schema for infrastructure requests. Supported providers: **jira** | **linear** | **pasted**.
 
-Team/project key: **PE** (Platform Engineering) by default (`JIRA_PROJECT_KEY` / `LINEAR_TEAM_KEY`). Pasted requests use `PE-paste-<service>` when the user does not supply a key.
+Team/project key: **PE** on **https://edsefsonytv.atlassian.net** (board 34). Cloud id `c829f01c-71dd-4abe-a246-4def3dfa5c2b`. Never `agentic-workflow-demo.atlassian.net`.
 
 ## Required fields
 
