@@ -15,12 +15,18 @@ First-time local IDE test: user says **run the local demo** ([docs/run-now.md](d
 
 Use the existing Jira Cursor webhook. Moving a well-formed PE ticket to **In Progress, agents** is enough. Do not start observability, Docker Compose, or Kind on that path.
 
+## Jira site
+
+When the ticket is Jira, use **https://edsefsonytv.atlassian.net** (project **PE**). If a Jira tool is on another site (especially `agentic-workflow-demo.atlassian.net`), stop and re-auth. Do not invent a spec from git.
+
+Prefer the **Atlassian plugin** for read/comment. Atlassian MCP is a fallback with `cloudId` = `edsefsonytv.atlassian.net` (or `c829f01c-71dd-4abe-a246-4def3dfa5c2b`).
+
 ## Autonomous delivery (Cloud Agent — Jira or Linear)
 
 When this run was started from a ticket webhook:
 
 1. Identify **this run's ticket** from the trigger (Jira work item, Linear issue, or webhook JSON `ticket_id`). Never assume `PE-9`, `PE-001`, or any other key.
-2. Read that ticket via Atlassian MCP or Linear MCP. Provider is `jira` if the ticket came from Jira.
+2. Read that ticket via Atlassian plugin/MCP or Linear MCP. Provider is `jira` if the ticket came from Jira.
 3. `./evals/score.sh` — factory yield must be 4/4. If evals FAIL, stop and report; do not invent a spec.
 4. `create-spec` → `implement-change` → `validate-change` until `04-validation/report.md` is PASS.
 5. Hooks in `.cursor/hooks.json` run in this checkout (fmt, incomplete-spec reject, deny merge / out-of-scope apply, stop until validation PASS). Do not bypass them.
@@ -76,6 +82,7 @@ Branch: pe/<KEY>-<service>
 - `validate-request` — local validate (no ticket comment)
 - `apply-onboarding` — terraform apply the request against local Vault
 - `connect-observability-mcp` — copy Grafana/Prometheus MCP if missing
+- `onboard-from-paste` — no tracker; fields in the message
 
 ## Runtime
 

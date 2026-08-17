@@ -4,8 +4,8 @@ Everything is a **skill**. Do not memorize `task` or shell. This path is **local
 
 ## Green light — one prompt
 
-1. Check out this branch.
-2. Start **Docker Desktop** and wait until it is idle (`docker info` works).
+1. Check out **`cursor/software-factory-8d74`** (not `main`). In Agent chat: “switch to branch cursor/software-factory-8d74” or run `git checkout cursor/software-factory-8d74`.
+2. Start **Docker Desktop** only if you want Grafana.
 3. Open the repo in Cursor. Agent chat (local), not a Cloud Agent.
 4. Say:
 
@@ -47,13 +47,38 @@ Tear down: **stop the factory**
 
 Docker is not running, or you have not said **start observability** / **run the local demo** yet. Host Vault (`start the environment`) does **not** bind `:3000`.
 
-## Async Cloud Agent (no Grafana)
+## Jira comment loop (blog path, Cursor IDE)
 
-Same factory line, no dashboards. Hooks and evals still run.
+Atlassian **plugin** must be enabled. Then in Agent chat, name the ticket (example PE-9) and run autonomous delivery. The agent comments on Jira via the plugin, not MCP.
+
+If you only want golden-path Grafana: **run the local demo**.
+
+## New onboarding without a ticket
+
+Paste fields and say **onboard this** (`ticket_provider: pasted`). Use this only when you are not using Jira.
+
+```
+Service name: auth-api
+Team: platform
+Environment: local
+K8s namespace: platform
+K8s service account: auth-api
+Secret paths: config, db
+Approver: platform-lead
+
+Acceptance criteria
+- Service can authenticate via Kubernetes auth
+- Service can read config and db secrets from Vault
+- Policy scoped to platform team paths only
+```
+
+That is `onboard-from-paste`: evals + hooks + spec → Terraform → draft PR. No tracker MCP. Grafana stays off unless you also **run the local demo**.
+
+## Async Cloud Agent (Teams + Jira, or Linear)
+
+Jira-triggered automations need Cursor **Teams** and Atlassian OAuth on the site that hosts project PE. Ultra cannot drive that hook.
 
 | Tracker | Move the ticket to |
 |---------|-------------------|
-| **Jira** (existing hook) | **In Progress, agents** |
+| **Jira** (Teams) | **In Progress, agents** (or your `In Progress Cursor` Jira status) |
 | Linear | **In Progress Cursor** |
-
-The Cloud Agent follows `AGENTS.md`: evals 4/4 → `create-spec` → implement → validate PASS → draft PR → comment on the ticket. Humans merge. It does not bind `:3000` and must not say **start observability**.

@@ -10,6 +10,7 @@ In Cursor Agent chat, say:
 
 | You say | What happens |
 |---------|----------------|
+| **onboard this** (paste the fields) | Autonomous delivery, no Jira/Linear |
 | **run the local demo** | Grafana + Vault + evals + apply PE-001 |
 | **start the environment** | Vault `-dev` + kubernetes auth mount (no Kind) |
 | **start observability** | OTel, Prometheus, Loki, Grafana, Jaeger, Vault |
@@ -23,7 +24,7 @@ In Cursor Agent chat, say:
 
 Grafana: http://127.0.0.1:3000 (admin/admin) — [Factory Operations](http://127.0.0.1:3000/d/factory-operations/factory-operations) and [Vault Onboarding](http://127.0.0.1:3000/d/vault-onboarding/vault-onboarding).
 
-Async intake: move a **Jira** ticket to **In Progress, agents** (existing Cursor webhook) or a Linear ticket to **In Progress Cursor**. A Cloud Agent runs evals, hooks, and autonomous delivery to a draft PR. That path does not start Grafana.
+Async intake (blog path): local Agent + **Atlassian plugin** — read PE-N, comment on Jira, no MCP. Paste-the-ticket is a fallback. Jira Cloud Agent webhooks are Teams and a different OAuth.
 
 ## Workflow
 

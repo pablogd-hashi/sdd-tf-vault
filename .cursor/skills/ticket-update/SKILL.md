@@ -1,26 +1,31 @@
 ---
 name: ticket-update
-description: Post a completion comment to the Jira or Linear ticket via the provider MCP with PR link and validation summary. Use after GitHub PR is created.
+description: Post a completion comment to the Jira ticket via the Atlassian Cursor plugin (preferred) or Linear. Use after GitHub PR is created. Do not require MCP.
 disable-model-invocation: true
 ---
 
 # Ticket Update
 
-Post completion comment to the ticket provider (Jira or Linear) and save draft to `07-ticket-update/comment.md`.
+Post a completion comment and save the draft to `07-ticket-update/comment.md`.
+
+**Jira site (required):** `https://edsefsonytv.atlassian.net` — project PE, [board 34](https://edsefsonytv.atlassian.net/jira/software/projects/PE/boards/34). Cloud id `c829f01c-71dd-4abe-a246-4def3dfa5c2b`. Never use `agentic-workflow-demo.atlassian.net`.
+
+**Linear:** Linear plugin or Linear MCP.
+
+**pasted:** write the comment file only; skip Jira/Linear.
 
 ## Prerequisites
 
-- PR created with metadata in `06-pr/metadata.json` (`ticket_id`, `ticket_provider`)
-- Provider MCP authenticated:
-  - **jira** → Atlassian MCP
-  - **linear** → Linear MCP
+- PR metadata in `06-pr/metadata.json` (`ticket_id`, `ticket_provider`)
+- For `jira`: Atlassian plugin enabled (`.cursor/settings.json` → `plugins.atlassian`)
 
-## Provider → MCP mapping
+## Provider → tools
 
-| Provider | Post comment | Transition / status |
-|----------|--------------|---------------------|
-| jira | `addCommentToJiraIssue` | `transitionJiraIssue` (ask user first) |
-| linear | `create_comment` | `update_issue` (ask user first) |
+| Provider | Comment | Notes |
+|----------|---------|--------|
+| jira | Atlassian **plugin** add-comment (or equivalent Jira tool) | Plugin first. MCP only if plugin is absent. |
+| linear | Linear plugin / `create_comment` | |
+| pasted | none — `07-ticket-update/comment.md` only | skip |
 
 ## Steps
 
@@ -28,8 +33,8 @@ Post completion comment to the ticket provider (Jira or Linear) and save draft t
 2. **Read** `04-validation/report.md` for verdict summary
 3. **Read** `03-terraform/main.tf` outputs for policy/role names
 4. **Write** `requests/<id>/07-ticket-update/comment.md` using template from `requests/_template/07-ticket-update/comment.md`
-5. **Post comment** to the ticket via the provider MCP
-6. **Transition / update status** to Done/In Review if appropriate (ask user first)
+5. **Post comment:** Jira → Atlassian plugin. Linear → Linear plugin. `pasted` → skip. Do not use MCP when the plugin works.
+6. **Do not** transition to Done unless the user asks.
 
 ## Comment must include
 

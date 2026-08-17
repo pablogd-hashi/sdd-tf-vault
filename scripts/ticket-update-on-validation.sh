@@ -34,8 +34,8 @@ if [ -z "${PROVIDER}" ]; then
   PROVIDER="${TICKET_PROVIDER:-jira}"
 fi
 case "${PROVIDER}" in
-  jira|linear) ;;
-  *) die "Unknown ticket_provider '${PROVIDER}' (expected jira|linear)" ;;
+  jira|linear|pasted) ;;
+  *) die "Unknown ticket_provider '${PROVIDER}' (expected jira|linear|pasted)" ;;
 esac
 
 # Idempotency: skip rewrite if comment already exists for same commit_sha
@@ -71,6 +71,8 @@ fi
 MCP_HINT="Atlassian MCP"
 if [ "${PROVIDER}" = "linear" ]; then
   MCP_HINT="Linear MCP"
+elif [ "${PROVIDER}" = "pasted" ]; then
+  MCP_HINT="none (pasted request — do not post to Jira/Linear)"
 fi
 
 mkdir -p "${REQ_DIR}/07-ticket-update"
