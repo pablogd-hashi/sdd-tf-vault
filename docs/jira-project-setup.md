@@ -63,7 +63,7 @@ The webhook lives in the Cursor dashboard (not in git): Jira issue enters **In P
 
 That is the unattended factory. Grafana stays on the laptop IDE path (`run the local demo`).
 
-If the hook already launches Cloud Agents, **replace the automation prompt** with the text in [cursor-webhook-prompt.md](cursor-webhook-prompt.md). The old prompt required status `In Progress Cursor` only, so Jira **In Progress, agents** was skipped.
+If the hook already launches Cloud Agents, **replace the automation prompt** with the text in [cursor-webhook-prompt.md](cursor-webhook-prompt.md) (from the `---` down). Do the **one-shot checklist** in that file first: Atlassian MCP must be granted on the Jira site in the PE-9 URL, not only `agentic-workflow-demo.atlassian.net`.
 
 ## Atlassian MCP in Cursor
 
