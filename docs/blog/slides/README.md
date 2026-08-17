@@ -1,6 +1,8 @@
 # Medium diagrams
 
-Two Reveal-mode slides (exact HTML/CSS, light theme, no talk titles) for the factory follow-up post.
+Two Reveal-mode slides (exact HTML/CSS, black/gold) for the factory follow-up post.
+
+Geometry follows the talk slide: 5px gutters, 1px gold/dashed borders, text centered in cells, grid filling the frame under the title.
 
 | File | Claim |
 |------|--------|
