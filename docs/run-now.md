@@ -47,9 +47,15 @@ Tear down: **stop the factory**
 
 Docker is not running, or you have not said **start observability** / **run the local demo** yet. Host Vault (`start the environment`) does **not** bind `:3000`.
 
-## New onboarding without Jira or Linear (Cursor Ultra)
+## Jira comment loop (blog path, Cursor IDE)
 
-Paste this in Agent chat and say **onboard this**:
+Atlassian **plugin** must be enabled. Then in Agent chat, name the ticket (example PE-9) and run autonomous delivery. The agent comments on Jira via the plugin, not MCP.
+
+If you only want golden-path Grafana: **run the local demo**.
+
+## New onboarding without a ticket
+
+Paste fields and say **onboard this** (`ticket_provider: pasted`). Use this only when you are not using Jira.
 
 ```
 Service name: auth-api

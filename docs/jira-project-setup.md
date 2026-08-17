@@ -65,12 +65,13 @@ That is the unattended factory. Grafana stays on the laptop IDE path (`run the l
 
 If the hook already launches Cloud Agents, **replace the automation prompt** with the text in [cursor-webhook-prompt.md](cursor-webhook-prompt.md) (from the `---` down). Do the **one-shot checklist** in that file first: Atlassian MCP must be granted on the Jira site in the PE-9 URL, not only `agentic-workflow-demo.atlassian.net`.
 
-## Atlassian MCP in Cursor
+## Atlassian plugin in Cursor (blog path)
 
-1. Copy `.cursor/mcp.json.example` to `.cursor/mcp.json`
-2. Open Cursor Settings → MCP
-3. Authenticate Atlassian via OAuth when prompted
-4. Test: ask agent to "search Jira for PE project tickets"
+Enable the **Atlassian** marketplace plugin. This repo turns it on in `.cursor/settings.json`. Authorize the Jira site where PE tickets live.
+
+Local Agent chat can then `get` PE-9 and **add a comment** the same way as the first blog. That does **not** use Settings → MCP.
+
+Cloud Agents that only have Atlassian MCP will hit whatever site that OAuth granted (in one run: `agentic-workflow-demo.atlassian.net`, which has no PE project). Do not treat that as “PE-9 is missing.”
 
 ## Example tickets
 

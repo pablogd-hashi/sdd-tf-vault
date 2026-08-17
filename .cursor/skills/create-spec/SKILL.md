@@ -13,25 +13,23 @@ This skill is the entry point for specification-driven autonomous delivery. It d
 ## Prerequisites
 
 - Ticket with required fields (see `ticket-schema` rule)
-- Provider: `pasted` if the user pasted the fields (no MCP). Otherwise:
-  - **jira** → Atlassian MCP
-  - **linear** → Linear MCP
+- Provider: `pasted` if the user pasted the fields. Otherwise **jira** via the Atlassian Cursor **plugin** (not MCP), or **linear** via the Linear plugin.
 - Feature branch: `pe/<ticket>-<service>`
 
 ## Provider → source mapping
 
 | Provider | Read issue |
 |----------|------------|
-| pasted | The user message / paste. No MCP. |
-| jira | Atlassian MCP (`getJiraIssue`) |
-| linear | Linear MCP (`get_issue`) |
+| pasted | The user message / paste |
+| jira | Atlassian **plugin** (Jira). MCP only if plugin is absent. |
+| linear | Linear plugin / `get_issue` |
 
-If the user pasted an Infrastructure Request block, provider is **pasted**. Do not call Jira.
+If the user names a Jira key (PE-9), use the plugin. Do not call Atlassian MCP while the plugin can see the issue.
 
 ## Steps
 
 1. **Resolve provider** — `pasted` | `jira` | `linear` (paste wins; else `TICKET_PROVIDER`)
-2. **Read the ticket** from the paste or via MCP. Ticket id: from paste (`PE-10`) or `PE-paste-<service-name>`
+2. **Read the ticket** from the paste or the Atlassian plugin. Ticket id: from the user (`PE-9`) or `PE-paste-<service-name>`.
 3. **Validate required fields** — reject if service name, team, namespace, SA, or secret paths missing
 4. **Create request directory**: `requests/<ticket-id>-<service-name>/` (if ticket id already includes the service, do not double it)
 5. **Copy template** from `requests/_template/01-spec/spec.md`

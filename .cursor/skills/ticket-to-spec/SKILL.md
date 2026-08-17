@@ -1,6 +1,6 @@
 ---
 name: ticket-to-spec
-description: Read an approved infrastructure request via Jira (Atlassian MCP) or Linear MCP and write a specification to requests/<ticket-id>/01-spec/spec.md. Use when starting a new workflow from a ticket or when the user asks to create a spec from Jira or Linear.
+description: Read an approved infrastructure request via the Atlassian Cursor plugin (Jira, preferred) or Linear and write a specification. Do not require MCP.
 disable-model-invocation: true
 ---
 
@@ -10,23 +10,24 @@ Convert a Jira or Linear infrastructure request into `requests/<ticket-id>/01-sp
 
 ## Prerequisites
 
-- Provider MCP authenticated in Cursor:
-  - **jira** → Atlassian MCP
-  - **linear** → Linear MCP
+- For **jira**: Atlassian Cursor **plugin** (Jira). Not MCP.
+- For **linear**: Linear plugin or Linear MCP
+- For **pasted**: the user message is the ticket
 - Ticket with required fields (see `ticket-schema` rule)
 - Provider known: from user (`TICKET_PROVIDER` / explicit mention), or ask if ambiguous
 
-## Provider → MCP mapping
+## Provider → source mapping
 
-| Provider | Read issue | MCP tools (examples) |
-|----------|------------|----------------------|
-| jira | Atlassian MCP | `getJiraIssue` |
-| linear | Linear MCP | `get_issue` |
+| Provider | Read issue |
+|----------|------------|
+| jira | Atlassian **plugin** (get issue / search PE). MCP only if plugin is absent. |
+| linear | Linear plugin |
+| pasted | User paste |
 
 ## Steps
 
 1. **Resolve provider** — `jira` or `linear` (default from `TICKET_PROVIDER` env if unset)
-2. **Read the ticket** via the provider MCP using the ticket key (e.g. `PE-123`)
+2. **Read the ticket** — Jira via the Atlassian plugin. If the plugin cannot see project PE, stop (wrong site). Do not reuse a git spec.
 3. **Validate required fields** — reject if service name, team, namespace, SA, or secret paths missing
 4. **Create request directory**: `requests/PE-123-<service-name>/`
 5. **Copy template** from `requests/_template/01-spec/spec.md`

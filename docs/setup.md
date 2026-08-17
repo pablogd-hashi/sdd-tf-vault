@@ -77,12 +77,15 @@ Copy the example MCP config and authenticate:
 cp .cursor/mcp.json.example .cursor/mcp.json
 ```
 
-### Atlassian (Jira)
+### Atlassian (Jira) — plugin, same as the blog
 
-1. Open Cursor → Settings → MCP
-2. Ensure the Atlassian server is configured with URL `https://mcp.atlassian.com/v1/mcp/authv2`
-3. Complete OAuth when prompted
-4. See [jira-project-setup.md](jira-project-setup.md) for project configuration
+Install/enable the **Atlassian** Cursor marketplace plugin (this repo sets `plugins.atlassian` in `.cursor/settings.json`). Authorize the site that hosts project **PE**.
+
+Skills `ticket-to-spec`, `create-spec`, and `ticket-update` use that plugin to read issues and add comments. **Do not** add Atlassian to `.cursor/mcp.json` for this loop. MCP is a second OAuth that Cloud Agents used against the wrong site.
+
+Test in Agent chat: "read Jira PE-9 using the Atlassian plugin".
+
+Optional MCP (Cloud Agents / Teams automations only) is documented in [jira-project-setup.md](jira-project-setup.md).
 
 ### Linear
 
