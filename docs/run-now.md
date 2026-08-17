@@ -49,4 +49,11 @@ Docker is not running, or you have not said **start observability** / **run the 
 
 ## Async Cloud Agent (no Grafana)
 
-Move a Linear ticket to **In Progress Cursor**. That path uses `create-spec` → draft PR. It does not fill laptop Grafana.
+Same factory line, no dashboards. Hooks and evals still run.
+
+| Tracker | Move the ticket to |
+|---------|-------------------|
+| **Jira** (existing hook) | **In Progress, agents** |
+| Linear | **In Progress Cursor** |
+
+The Cloud Agent follows `AGENTS.md`: evals 4/4 → `create-spec` → implement → validate PASS → draft PR → comment on the ticket. Humans merge. It does not bind `:3000` and must not say **start observability**.

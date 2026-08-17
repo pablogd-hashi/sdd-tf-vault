@@ -18,7 +18,7 @@ Optional: **start the environment** if you only want Vault without Grafana.
 
 Tear down: **stop the factory** (does not delete Kind).
 
-Async beat (no Grafana): move a Linear ticket to **In Progress Cursor**. A Cloud Agent runs `create-spec` → validation → draft PR per `AGENTS.md`.
+Async beat (no Grafana): move a **Jira** ticket to **In Progress, agents** or a Linear ticket to **In Progress Cursor**. A Cloud Agent runs evals + hooks + `create-spec` → validation → draft PR per `AGENTS.md`.
 
 ---
 

@@ -23,7 +23,7 @@ In Cursor Agent chat, say:
 
 Grafana: http://127.0.0.1:3000 (admin/admin) — [Factory Operations](http://127.0.0.1:3000/d/factory-operations/factory-operations) and [Vault Onboarding](http://127.0.0.1:3000/d/vault-onboarding/vault-onboarding).
 
-Async intake: move a Linear ticket to **In Progress Cursor**; a Cloud Agent runs the autonomous path. That path does not fill laptop Grafana.
+Async intake: move a **Jira** ticket to **In Progress, agents** (existing Cursor webhook) or a Linear ticket to **In Progress Cursor**. A Cloud Agent runs evals, hooks, and autonomous delivery to a draft PR. That path does not start Grafana.
 
 ## Workflow
 

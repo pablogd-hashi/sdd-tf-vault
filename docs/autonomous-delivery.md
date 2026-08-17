@@ -12,7 +12,9 @@ Specification-driven **autonomous delivery** extends the existing manual workflo
 
 ## Quick start (webhook)
 
-Move a Linear issue to **In Progress Cursor**. A Cloud Agent follows `AGENTS.md`. For a local observability demo, say **start observability** instead (laptop Grafana).
+Move a **Jira** issue to **In Progress, agents** (existing Cursor webhook) or a Linear issue to **In Progress Cursor**. A Cloud Agent follows `AGENTS.md`: golden evals, in-repo hooks, then `create-spec` → validation → draft PR. It does **not** start Grafana.
+
+For a local observability demo, say **run the local demo** instead (laptop Grafana).
 
 ## Quick start (skills)
 

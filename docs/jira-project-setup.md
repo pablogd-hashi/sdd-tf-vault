@@ -57,7 +57,13 @@ Approver: platform-lead
 | In Review | PR open |
 | Done | Merged and Jira updated |
 
-Add the agents status if you wire a Cursor webhook to Jira. Cloud Agents do not fill laptop Grafana; use the local agent and **start observability** for dashboards.
+Add the **In Progress, agents** status and point your existing Cursor webhook at it (same pattern as Linear **In Progress Cursor**).
+
+The webhook lives in the Cursor dashboard (not in git): Jira issue enters **In Progress, agents** → start Cloud Agent on this repo. The agent follows `AGENTS.md`: evals + hooks + spec → Terraform → validate → draft PR. It must **not** start Grafana or Docker Compose.
+
+That is the unattended factory. Grafana stays on the laptop IDE path (`run the local demo`).
+
+If the hook already launches Cloud Agents from an older prompt, update the automation prompt to: follow `AGENTS.md` autonomous delivery; run `./evals/score.sh`; do not start observability.
 
 ## Atlassian MCP in Cursor
 
