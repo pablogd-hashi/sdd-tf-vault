@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SDLC eras</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;600;700&display=swap">
+  <link rel="stylesheet" href="css/slides.css">
+</head>
+<body>
+  <div class="slide">
+    <header class="top">
+      <div class="eyebrow">02 — SDLC</div>
+      <h1>What changes at SDLC stages</h1>
+    </header>
+    <div class="sdlc">
+      <div></div>
+      <div class="loop inner">Inner loop — before the PR</div>
+      <div class="loop outer">Outer loop</div>
+
+      <div></div>
+      <div class="col-h">Spec</div>
+      <div class="col-h">Plan</div>
+      <div class="col-h">Build</div>
+      <div class="col-h">Test</div>
+      <div class="col-h">Review</div>
+      <div class="col-h">Deploy</div>
+      <div class="col-h">Operate</div>
+
+      <div class="era">Tab</div>
+      <div class="cell dash">you write the next line</div>
+      <div class="cell dash">decided in stand-ups</div>
+      <div class="cell dash">you write the Terraform</div>
+      <div class="cell dash">happy path only</div>
+      <div class="cell dash">reviewer re-derives context</div>
+      <div class="cell dash">release gate</div>
+      <div class="cell dash">incident to fix</div>
+
+      <div class="era gold">Synchronous<br>agentic SDLC</div>
+      <div class="cell solid"><b>human</b>writes checkable criteria</div>
+      <div class="cell solid"><b>agent · human</b>drafts, then approves</div>
+      <div class="cell solid"><b>agent</b>edits in approved scope</div>
+      <div class="cell solid"><b>agent · human</b>validates, then accepts</div>
+      <div class="cell solid"><b>agent</b>hands over evidence</div>
+      <div class="cell dash">ship it, run it unchanged</div>
+      <div class="cell dash">monitor &amp; respond unchanged</div>
+
+      <div class="era gold">Asynchronous<br>software factory</div>
+      <div class="cell solid"><b>agent</b>writes spec from the ticket</div>
+      <div class="cell solid"><b>agent</b>plans unattended</div>
+      <div class="cell solid"><b>agent</b>Cloud Agent on a VM + hooks</div>
+      <div class="cell solid"><b>agent</b>validate-change until PASS</div>
+      <div class="cell solid"><b>agent · human</b>artifacts, then merges</div>
+      <div class="cell dash">human merges the draft PR</div>
+      <div class="cell solid"><b>agent</b>Grafana + evals</div>
+    </div>
+  </div>
+</body>
+</html>
