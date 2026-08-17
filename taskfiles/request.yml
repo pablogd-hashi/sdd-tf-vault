@@ -18,6 +18,10 @@ tasks:
       - task: :platform:ensure-vault
       - terraform -chdir={{.REQ_DIR}} init -input=false
       - terraform -chdir={{.REQ_DIR}} apply -auto-approve
+      - |
+        TICKET="$(echo "{{.REQUEST}}" | grep -oE '^[A-Z]+-[0-9]+' || echo "{{.REQUEST}}")"
+        FACTORY_TICKET_ID="${TICKET}" scripts/factory-otel.sh metric factory.vault.apply 1 "request={{.REQUEST}}" || true
+        FACTORY_TICKET_ID="${TICKET}" scripts/factory-otel.sh span request-apply "request={{.REQUEST}}" || true
       - task: url
 
   down:

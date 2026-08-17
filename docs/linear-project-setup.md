@@ -51,9 +51,16 @@ Approver: platform-lead
 | Status | Maps to repo phase |
 |--------|-------------------|
 | Backlog / Todo | Ticket filed |
-| In Progress | Spec/plan in progress |
+| In Progress | Human working the ticket in the IDE (manual gated path) |
+| **In Progress Cursor** (or **in progress, agents**) | Cursor webhook launches a Cloud Agent — autonomous factory path |
 | In Review | PR open |
 | Done | Merged and ticket updated |
+
+Team **Onboarding** already has `In Progress Cursor`. Team **PE** should add the same started-type status if demo tickets are `PE-*`, then point the Cursor webhook at that status.
+
+The webhook lives in the Cursor dashboard (not in git). Recreate it as: Linear issue enters `In Progress Cursor` → start Cloud Agent on this repo. Paste the prompt from [cursor-webhook-prompt.md](cursor-webhook-prompt.md) (same prompt as Jira; status allowlist includes both).
+
+Cloud Agents do **not** fill laptop Grafana. For dashboards, use the local agent and say **start observability**.
 
 ## Linear MCP in Cursor
 

@@ -5,7 +5,7 @@ Configure a Jira Free project for Platform Engineering infrastructure requests.
 ## Create project
 
 1. Go to [Jira](https://www.atlassian.com/software/jira/free) and create a free site
-2. Create project **PE** (Platform Engineering)
+2. Create project **PE** (Platform Engineering) on **https://edsefsonytv.atlassian.net** (board 34).
 3. Use **Kanban** or **Team-managed** template
 
 ## Issue type
@@ -52,16 +52,26 @@ Approver: platform-lead
 | Status | Maps to repo phase |
 |--------|-------------------|
 | To Do | Ticket filed |
-| In Progress | Spec/plan in progress |
+| In Progress | Human working the ticket in the IDE (manual gated path) |
+| **In Progress, agents** | Cursor webhook launches a Cloud Agent — autonomous factory path |
 | In Review | PR open |
 | Done | Merged and Jira updated |
 
-## Atlassian MCP in Cursor
+Add the **In Progress, agents** status and point your existing Cursor webhook at it (same pattern as Linear **In Progress Cursor**).
 
-1. Copy `.cursor/mcp.json.example` to `.cursor/mcp.json`
-2. Open Cursor Settings → MCP
-3. Authenticate Atlassian via OAuth when prompted
-4. Test: ask agent to "search Jira for PE project tickets"
+The webhook lives in the Cursor dashboard (not in git): Jira issue enters **In Progress, agents** → start Cloud Agent on this repo. The agent follows `AGENTS.md`: evals + hooks + spec → Terraform → validate → draft PR. It must **not** start Grafana or Docker Compose.
+
+That is the unattended factory. Grafana stays on the laptop IDE path (`run the local demo`).
+
+If the hook already launches Cloud Agents, **replace the automation prompt** with the text in [cursor-webhook-prompt.md](cursor-webhook-prompt.md) (from the `---` down). Do the **one-shot checklist** in that file first: Atlassian MCP must be granted on the Jira site in the PE-9 URL, not only `agentic-workflow-demo.atlassian.net`.
+
+## Atlassian plugin in Cursor (blog path)
+
+Enable the **Atlassian** marketplace plugin. This repo turns it on in `.cursor/settings.json`. Authorize **https://edsefsonytv.atlassian.net** (project PE, [board 34](https://edsefsonytv.atlassian.net/jira/software/projects/PE/boards/34)). If the plugin or MCP is on `agentic-workflow-demo.atlassian.net`, it is the wrong cloud — re-auth.
+
+Local Agent chat can then `get` PE-9 and **add a comment** the same way as the first blog. That does **not** use Settings → MCP.
+
+Cloud Agents that only have Atlassian MCP will hit whatever site that OAuth granted (in one run: `agentic-workflow-demo.atlassian.net`, which has no PE project). Do not treat that as “PE-9 is missing.”
 
 ## Example tickets
 

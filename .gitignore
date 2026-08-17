@@ -31,10 +31,14 @@ tests/vendor/
 requests/**/04-validation/report.md.tmp
 
 # Bootstrap output
-# Bootstrap output
 .platform-state
 .vault-port-forward.log
+.vault-dev.pid
+.vault-dev.log
 
 # Terraform local state
 .terraform-platform.tfstate
 .terraform-platform.tfstate.backup
+.terraform-platform-kind.tfstate
+.terraform-platform-kind.tfstate.backup
+*.tfplan

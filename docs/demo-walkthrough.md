@@ -1,6 +1,30 @@
-# Demo Walkthrough (~15 minutes)
+# Demo Walkthrough
 
-End-to-end demonstration of the Platform Engineering Copilot workflow. Each phase below produces one artifact in `requests/PE-002-<service>/`.
+**Start here for a live test:** [run-now.md](run-now.md) — in Cursor say **run the local demo**.
+
+Two longer beats: **operate the factory in English** (local Grafana), then the original **gated IDE walkthrough**.
+
+## Factory demo (local agent, ~10 minutes)
+
+Do not memorize `task` names. Docker Desktop must be running. In Cursor, say:
+
+1. **run the local demo** — Grafana + Vault + evals + apply PE-001
+2. **show the dashboard** — Factory Operations + Vault Onboarding
+3. **connect grafana mcp** if MCP is not loaded yet, then "list Grafana dashboards"
+
+Or the same pieces one skill at a time: **start observability** → **run evals** → **validate PE-001** → **apply onboarding** → **factory status**.
+
+Optional: **start the environment** if you only want Vault without Grafana.
+
+Tear down: **stop the factory** (does not delete Kind).
+
+Async beat (no Grafana): move a **Jira** ticket to **In Progress, agents** or a Linear ticket to **In Progress Cursor**. A Cloud Agent runs evals + hooks + `create-spec` → validation → draft PR per `AGENTS.md`.
+
+---
+
+# Gated IDE walkthrough (~15 minutes)
+
+End-to-end demonstration of the Platform Engineering Copilot **manual** workflow. Each phase below produces one artifact in `requests/PE-002-<service>/`.
 
 [![Seven-phase SDD workflow](diagrams/01-workflow-phases.svg)](https://www.figma.com/board/1RbIQpZgVRQr2TzsKe2SiZ)
 
@@ -8,9 +32,10 @@ End-to-end demonstration of the Platform Engineering Copilot workflow. Each phas
 
 ```bash
 cp .env.example .env
-task platform:up   # Kind cluster + Vault dev + Kubernetes auth Terraform
+# In Cursor say: start observability
+# (or: start the environment — Vault only, no Grafana)
 cp .cursor/mcp.json.example .cursor/mcp.json
-# Authenticate Atlassian (or Linear) + GitHub MCP in Cursor
+# Authenticate Linear or Atlassian + GitHub MCP; Grafana/Prometheus MCP use localhost
 ```
 
 Golden example (pre-built): `requests/PE-001-payments-api/`

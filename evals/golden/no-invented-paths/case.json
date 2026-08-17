@@ -1,0 +1,8 @@
+{
+  "id": "no-invented-paths",
+  "request_id": "PE-1-payments-api",
+  "expect": {
+    "secret_paths": ["config", "db"],
+    "forbid_extra_paths": true
+  }
+}

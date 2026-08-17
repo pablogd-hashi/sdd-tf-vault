@@ -10,19 +10,16 @@ Specification-driven **autonomous delivery** extends the existing manual workflo
 | Standard Vault service onboarding | Non-standard or exploratory requests |
 | Local/dev environment delivery | Production-first review gates |
 
-## Quick start
+## Quick start (webhook)
 
-```bash
-# On feature branch (never merge autonomous experiments to main without review)
-git checkout -b pe/PE-123-payments-api
+Move a **Jira** issue to **In Progress, agents** (existing Cursor webhook) or a Linear issue to **In Progress Cursor**. A Cloud Agent follows `AGENTS.md`: golden evals, in-repo hooks, then `create-spec` → validation → draft PR. It does **not** start Grafana.
 
-# In Cursor, invoke skills in order:
-# 1. create-spec      — from ticket PE-123 (jira or linear)
-# 2. implement-change — plan + terraform (auto-continues to validate)
-# 3. validate-change  — loop until PASS
-# 4. reviewer         — readonly evaluation
-# 5. bugbot-review    — before PR (unchanged)
-# 6. open-github-pr   — human merge approval
+For a local observability demo, say **run the local demo** instead (laptop Grafana).
+
+## Quick start (skills)
+
+```
+create-spec → implement-change → validate-change (loop) → reviewer → bugbot → draft PR
 ```
 
 Or run validation manually:

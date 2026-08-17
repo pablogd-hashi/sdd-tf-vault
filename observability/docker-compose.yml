@@ -1,0 +1,103 @@
+# Software factory observability stack.
+# Vault -dev + OTel Collector + Prometheus + Loki + Jaeger + Grafana.
+# No Kubernetes. Local agent runtime can reach these on localhost.
+
+name: pe-factory
+
+networks:
+  factory:
+    driver: bridge
+
+volumes:
+  prometheus-data:
+  grafana-data:
+  loki-data:
+
+services:
+  vault:
+    image: hashicorp/vault:1.18
+    cap_add: [IPC_LOCK]
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: root
+      VAULT_DEV_LISTEN_ADDRESS: 0.0.0.0:8200
+      VAULT_ADDR: http://127.0.0.1:8200
+      VAULT_TOKEN: root
+      VAULT_LOG_LEVEL: info
+    command:
+      - server
+      - -dev
+      - -dev-root-token-id=root
+      - -dev-listen-address=0.0.0.0:8200
+      - -config=/vault/config/telemetry.hcl
+    volumes:
+      - ../platform/vault-dev.hcl:/vault/config/telemetry.hcl:ro
+    ports:
+      - "8200:8200"
+    networks: [factory]
+    healthcheck:
+      test: ["CMD", "vault", "status"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.117.0
+    command: ["--config=/etc/otel/config.yaml"]
+    volumes:
+      - ./otel-collector/config.yaml:/etc/otel/config.yaml:ro
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+    networks: [factory]
+    depends_on: [prometheus, loki, jaeger]
+
+  prometheus:
+    image: prom/prometheus:v3.1.0
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --web.enable-remote-write-receiver
+      - --enable-feature=otlp-write-receiver
+      - --enable-feature=native-histograms
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    ports:
+      - "9090:9090"
+    networks: [factory]
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  loki:
+    image: grafana/loki:3.3.0
+    command: ["-config.file=/etc/loki/loki-config.yaml"]
+    volumes:
+      - ./loki/loki-config.yaml:/etc/loki/loki-config.yaml:ro
+      - loki-data:/loki
+    ports:
+      - "3100:3100"
+    networks: [factory]
+
+  jaeger:
+    image: jaegertracing/jaeger:2.2.0
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+    ports:
+      - "16686:16686"
+    networks: [factory]
+
+  grafana:
+    image: grafana/grafana:11.5.0
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_USERS_DEFAULT_THEME: dark
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    depends_on: [prometheus, loki, jaeger]
+    networks: [factory]

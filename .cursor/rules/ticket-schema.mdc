@@ -5,9 +5,9 @@ alwaysApply: false
 
 # Ticket Schema
 
-Provider-agnostic schema for infrastructure requests. Supported providers: **jira** | **linear**.
+Provider-agnostic schema for infrastructure requests. Supported providers: **jira** | **linear** | **pasted**.
 
-Team/project key: **PE** (Platform Engineering) by default (`JIRA_PROJECT_KEY` / `LINEAR_TEAM_KEY`).
+Team/project key: **PE** on **https://edsefsonytv.atlassian.net** (board 34). Cloud id `c829f01c-71dd-4abe-a246-4def3dfa5c2b`. Never `agentic-workflow-demo.atlassian.net`.
 
 ## Required fields
 
@@ -24,6 +24,10 @@ Team/project key: **PE** (Platform Engineering) by default (`JIRA_PROJECT_KEY` /
 | Acceptance criteria | free text | Service can read config and db secrets |
 
 ## Where fields live (per provider)
+
+### Pasted (no tracker)
+
+Paste the field list into Cursor Agent chat (Ultra / local). Skill: `onboard-from-paste`. Set `ticket_provider: pasted`. No MCP.
 
 ### Jira
 

@@ -1,8 +1,30 @@
 # Platform Engineering Copilot
 
-An open-source reference implementation showing how to implement software delivery in regulated platform engineering teams.
+Specification-driven **software factory** for Vault service onboarding: tickets become Terraform, with hooks, evals, and Grafana.
 
-This repository demonstrates a **specification-driven workflow** that converts approved infrastructure tickets (Jira or Linear) into production-ready Terraform — with every phase independently reviewable.
+**Test it now (Cursor IDE):** start Docker Desktop, then say **run the local demo**. Details: [docs/run-now.md](docs/run-now.md).
+
+## Operate the factory (skills only)
+
+In Cursor Agent chat, say:
+
+| You say | What happens |
+|---------|----------------|
+| **onboard this** (paste the fields) | Autonomous delivery, no Jira/Linear |
+| **run the local demo** | Grafana + Vault + evals + apply PE-001 |
+| **start the environment** | Vault `-dev` + kubernetes auth mount (no Kind) |
+| **start observability** | OTel, Prometheus, Loki, Grafana, Jaeger, Vault |
+| **run evals** | Deterministic yield on golden tickets |
+| **validate PE-001** | Local validate-change (no ticket post) |
+| **apply onboarding** | Policy, k8s role, KV paths on local Vault |
+| **show the dashboard** | Factory Operations + Vault Onboarding |
+| **factory status** | Health of Vault and Grafana |
+| **connect grafana mcp** | Localhost Grafana + Prometheus MCP |
+| **stop the factory** | Tear down compose + host Vault |
+
+Grafana: http://127.0.0.1:3000 (admin/admin) — [Factory Operations](http://127.0.0.1:3000/d/factory-operations/factory-operations) and [Vault Onboarding](http://127.0.0.1:3000/d/vault-onboarding/vault-onboarding).
+
+Async intake (blog path): local Agent + **Atlassian plugin** — read PE-N, comment on Jira, no MCP. Paste-the-ticket is a fallback. Jira Cloud Agent webhooks are Teams and a different OAuth.
 
 ## Workflow
 
@@ -40,13 +62,14 @@ For each approved **Vault service onboarding** request, the copilot produces:
 
 | Component | Purpose |
 |-----------|---------|
-| [Kind](https://kind.sigs.k8s.io/) | Local Kubernetes cluster |
-| [Vault OSS](https://www.vaultproject.io/) | Secrets management (dev mode) |
+| [Vault OSS](https://www.vaultproject.io/) | Secrets management (`-dev` binary or compose — factory default) |
+| [Kind](https://kind.sigs.k8s.io/) | Optional laptop path to prove a pod can log in |
+| [Grafana](https://grafana.com/) + Prometheus + Loki + Jaeger + OTel | Factory + Vault dashboards |
 | [Terraform OSS](https://www.terraform.io/) | Infrastructure as code |
 | [Jira Free](https://www.atlassian.com/software/jira/free) or [Linear](https://linear.app/) | Infrastructure request intake |
 | [GitHub Free](https://github.com/) | Pull request delivery |
-| [Slack](https://slack.com/) | Workflow notifications and ticket confirmations (optional) |
-| [Cursor](https://cursor.com/) | Rules, Skills, MCP, Bugbot |
+| [Slack](https://slack.com/) | Workflow notifications (optional) |
+| [Cursor](https://cursor.com/) | Rules, Skills, Hooks, MCP, Bugbot |
 
 No cloud resources are provisioned. No enterprise licences required.
 
@@ -54,29 +77,33 @@ No cloud resources are provisioned. No enterprise licences required.
 
 ### Prerequisites
 
-- Docker, Kind, kubectl, Helm, Terraform ≥ 1.5, Go ≥ 1.21
-- [go-task](https://taskfile.dev/installation/) (`brew install go-task`) — task runner for the flows below
-- Optional: [Vault CLI](https://developer.hashicorp.com/vault/install), [tflint](https://github.com/terraform-linters/tflint)
+- Terraform ≥ 1.5, Go ≥ 1.21, Vault CLI **or** Docker
+- Docker — only for Grafana / observability
+- [go-task](https://taskfile.dev/installation/) — optional; skills call scripts directly
+- Kind / kubectl / Helm — optional Kind path only
 
-### Task runner ([go-task](https://taskfile.dev))
+### Task runner ([go-task](https://taskfile.dev)) — optional
 
-Every stack is modelled as a **flow** that supports `up`, `down`, `reset`, and `url`:
+Skills call scripts. If you have `task` installed, `task factory:environment` is the same as `./scripts/factory-environment.sh`.
 
-| Flow | What it manages | Commands |
-|------|-----------------|----------|
-| `platform` | Kind cluster + Vault (dev) + Kubernetes auth | `task platform:up` · `platform:down` · `platform:reset` · `platform:url` |
-| `request`  | A request's Terraform (`REQUEST=<id>`) | `task request:up REQUEST=<id>` · `request:down` · `request:reset` · `request:url` |
+| Flow | What it manages |
+|------|-----------------|
+| `factory` | Vault `-dev` + Grafana stack |
+| `platform` | Vault `-dev` (or `platform:kind` for Kind) |
+| `request` | Per-request Terraform (`REQUEST=<id>`) |
 
-Run `task` (or `task help`) to see everything. Top-level `task up`/`down`/`reset`/`url` are shortcuts for the `platform` flow.
+### Bootstrap factory runtime (no Kind)
 
-### Bootstrap local platform
+Say **start the environment** in Cursor, or:
 
 ```bash
 cp .env.example .env
-task platform:up      # Kind + Vault dev + port-forward + Kubernetes auth
-task platform:url     # print the Vault URL
-task test-local       # Terratest against local Vault
+task factory:environment      # Vault -dev + kubernetes auth mount
+task factory:observability    # Grafana / Prometheus / OTel (includes Vault)
+task factory:status
 ```
+
+Optional Kind path (pod-login proof only): `task platform:kind`.
 
 ### Provision a request and read its URL/outputs
 
@@ -101,14 +128,13 @@ See [docs/setup.md](docs/setup.md) for full setup including MCP configuration.
 
 ```
 requests/          One folder per ticket; phases are numbered subdirs
-terraform/         Platform bootstrap + reusable vault-service-onboard module
-platform/          Kind cluster config + Helm values + bootstrap scripts
-.cursor/           Rules and Skills that encode the workflow gates
-docs/              Setup guide, demo script, architecture, autonomous delivery, ADRs
-docs/diagrams/     FigJam-authored SVG diagrams (see docs/figma-diagrams.md)
-policies/          Conftest Rego policies for plan validation
-.cursor/agents/    Custom subagents (reviewer)
-.cursor/BUGBOT.md  Bugbot PR review rules
+terraform/         Platform (Vault-only) + optional platform-kind + vault-service-onboard
+platform/          Vault -dev config + optional Kind/Helm scripts
+observability/     Compose: OTel, Prometheus, Loki, Grafana, Jaeger, Vault
+evals/             Deterministic factory yield tests
+.cursor/           Rules, Skills, Hooks, MCP example
+docs/              Setup, demo, architecture, ADRs
+policies/          Conftest Rego policies
 tests/             Terratest integration tests
 ```
 
@@ -117,13 +143,16 @@ tests/             Terratest integration tests
 | Integration | Role |
 |-------------|------|
 | **Cursor Rules** | Enforce phase order, spec format, Terraform conventions |
-| **Cursor Skills** | Deterministic procedures for each workflow step |
+| **Cursor Skills** | Factory DX (`start-environment`, …) plus workflow phases |
+| **Cursor Hooks** | Deterministic gauges — fmt, spec fields, deny merge, validation stop |
 | **Cursor Subagents** | Readonly reviewer for autonomous delivery evaluation |
 | **Jira MCP** (Atlassian) | Read Jira tickets, post completion comments |
 | **Linear MCP** | Read Linear issues, post completion comments |
 | **GitHub MCP** | Create branches and pull requests |
-| **Slack MCP** | Post workflow notifications, query pending tickets, confirm ticket creation |
-| **Bugbot** | Mandatory code review subagent before PR merge (see `.cursor/BUGBOT.md`) |
+| **Grafana MCP** | Dashboards and PromQL via Grafana (local demo) |
+| **Prometheus MCP** | Raw PromQL against localhost:9090 |
+| **Slack MCP** | Workflow notifications (optional) |
+| **Bugbot** | Mandatory code review before PR merge |
 
 Skills are **explicitly invoked** — the agent does not autonomously skip gates in the manual workflow. The autonomous path (`create-spec` → `implement-change` → `validate-change`) runs explicit loops documented in [docs/autonomous-delivery.md](docs/autonomous-delivery.md).
 
@@ -138,7 +167,9 @@ Skills are **explicitly invoked** — the agent does not autonomously skip gates
 
 ## Demo
 
-Follow [docs/demo-walkthrough.md](docs/demo-walkthrough.md) for a ~15 minute end-to-end walkthrough using the golden example at `requests/PE-001-payments-api/`.
+**Fastest:** [docs/run-now.md](docs/run-now.md)
+
+Full script: [docs/demo-walkthrough.md](docs/demo-walkthrough.md). Golden example: `requests/PE-001-payments-api/`.
 
 ## Licence
 

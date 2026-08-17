@@ -10,6 +10,7 @@ Architecture Decision Records (ADRs) for Platform Engineering Copilot.
 | [004](004-bugbot-configuration.md) | Bugbot configuration | Accepted |
 | [005](005-jira-update-on-validation.md) | Ticket update on validation | Accepted |
 | [006](006-ticket-provider-abstraction.md) | Ticket provider abstraction (Jira + Linear) | Accepted |
+| [007](007-factory-operate-layer.md) | Factory operate layer (OTel + Grafana) | Accepted |
 
 ## Format
 

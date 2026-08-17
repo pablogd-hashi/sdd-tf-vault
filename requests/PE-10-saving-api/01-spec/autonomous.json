@@ -1,0 +1,7 @@
+{
+  "mode": "autonomous",
+  "ticket_id": "PE-10",
+  "ticket_provider": "jira",
+  "created_at": "2026-08-04T04:43:00Z",
+  "next_skill": "implement-change"
+}

@@ -1,5 +1,8 @@
 {
   "plugins": {
+    "atlassian": {
+      "enabled": true
+    },
     "linear": {
       "enabled": true
     }

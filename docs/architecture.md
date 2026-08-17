@@ -17,7 +17,7 @@ This repository implements **specification-driven development (SDD)** with expli
 
 The agent is a **copilot** in the manual workflow — each phase produces a committed artifact that a human approves before the next phase begins.
 
-An optional **autonomous delivery** path (`create-spec` → `implement-change` → `validate-change`) auto-continues through implement and validate with explicit retry loops. See [autonomous-delivery.md](autonomous-delivery.md) and [engineering-decisions/](engineering-decisions/).
+An optional **autonomous delivery** path (`create-spec` → `implement-change` → `validate-change`) auto-continues through implement and validate with explicit retry loops. Command **hooks** enforce fmt, spec fields, no-merge, and validation-before-stop. **Evals** score golden tickets. The **operate** layer is Grafana + OTel (ADR-007). See [autonomous-delivery.md](autonomous-delivery.md) and [engineering-decisions/](engineering-decisions/).
 
 ## System overview
 
@@ -50,9 +50,10 @@ Reviewers can scope their review to a single phase without reading unrelated art
 
 [![Infrastructure layers](diagrams/05-infrastructure-layers.svg)](https://www.figma.com/board/1RbIQpZgVRQr2TzsKe2SiZ)
 
-- **Platform layer** — applied once; configures Kubernetes auth and KV mount
+- **Platform layer** — Vault `-dev` plus kubernetes auth **mount** (factory default). Optional Kind JWT config in `terraform/platform-kind`.
 - **Module** — reusable `vault-service-onboard` for any service
 - **Request layer** — thin wrapper per ticket with values from approved spec
+- **Operate layer** — OTel / Prometheus / Loki / Grafana (Factory Operations + Vault Onboarding)
 
 ## End-to-end flow
 

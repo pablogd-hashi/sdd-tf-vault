@@ -1,0 +1,8 @@
+{
+  "ticket_id": "PE-10",
+  "ticket_provider": "jira",
+  "branch": "pe/PE-10-saving-api",
+  "pr_url": "https://github.com/pablogd-hashi/sdd-tf-vault/pull/5",
+  "commit_sha": "3436852b13988f4ce830d2a759b53d9e6ccb3e79",
+  "created_at": "2026-08-17T13:50:00Z"
+}

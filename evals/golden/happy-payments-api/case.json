@@ -1,0 +1,11 @@
+{
+  "id": "happy-payments-api",
+  "request_id": "PE-001-payments-api",
+  "expect": {
+    "service_name": "payments-api",
+    "team": "payments",
+    "namespace": "payments",
+    "service_account": "payments-api",
+    "secret_paths": ["config", "db"]
+  }
+}
