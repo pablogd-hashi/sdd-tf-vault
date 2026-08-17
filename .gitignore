@@ -38,3 +38,14 @@ requests/**/04-validation/report.md.tmp
 # Terraform local state
 .terraform-platform.tfstate
 .terraform-platform.tfstate.backup
+
+# Presentation skill local runtime and generated decks
+vendor/presentation_skill/.venv/
+vendor/presentation_skill/.pytest_cache/
+vendor/presentation_skill/.mypy_cache/
+vendor/presentation_skill/.ruff_cache/
+vendor/presentation_skill/dist/
+vendor/presentation_skill/build/
+vendor/presentation_skill/**/__pycache__/
+vendor/presentation_skill/**/*.egg-info/
+/decks/

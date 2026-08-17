@@ -110,6 +110,7 @@ policies/          Conftest Rego policies for plan validation
 .cursor/agents/    Custom subagents (reviewer)
 .cursor/BUGBOT.md  Bugbot PR review rules
 tests/             Terratest integration tests
+vendor/            Vendored public skill packages (see vendor/SOURCE.md)
 ```
 
 ## Cursor integrations
@@ -117,7 +118,7 @@ tests/             Terratest integration tests
 | Integration | Role |
 |-------------|------|
 | **Cursor Rules** | Enforce phase order, spec format, Terraform conventions |
-| **Cursor Skills** | Deterministic procedures for each workflow step |
+| **Cursor Skills** | Deterministic procedures for each workflow step, plus the presentation skill overlay |
 | **Cursor Subagents** | Readonly reviewer for autonomous delivery evaluation |
 | **Jira MCP** (Atlassian) | Read Jira tickets, post completion comments |
 | **Linear MCP** | Read Linear issues, post completion comments |
@@ -126,6 +127,16 @@ tests/             Terratest integration tests
 | **Bugbot** | Mandatory code review subagent before PR merge (see `.cursor/BUGBOT.md`) |
 
 Skills are **explicitly invoked** — the agent does not autonomously skip gates in the manual workflow. The autonomous path (`create-spec` → `implement-change` → `validate-change`) runs explicit loops documented in [docs/autonomous-delivery.md](docs/autonomous-delivery.md).
+
+### Presentation skill
+
+The public [presentation_skill](https://github.com/grapeot/presentation_skill) package is vendored at `vendor/presentation_skill`. Cursor loads exactly one root skill: `.cursor/skills/presentation/SKILL.md`. Local decks go in `decks/` (gitignored).
+
+```bash
+python3 -m venv vendor/presentation_skill/.venv
+vendor/presentation_skill/.venv/bin/pip install -e 'vendor/presentation_skill[dev]'
+bash vendor/presentation_skill/scripts/presentation-skill "Topic" --mode image --output decks/topic
+```
 
 ## Design principles
 
