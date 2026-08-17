@@ -3,7 +3,7 @@
 | Field | Value |
 |-------|-------|
 | **Request** | PE-9-payments-api |
-| **Reviewed at** | 2026-08-05T14:54:00Z |
+| **Reviewed at** | 2026-08-17T08:58:00Z |
 | **Subagent** | reviewer (readonly) |
 | **Context** | Isolated — spec, plan, terraform, validation only |
 
@@ -11,8 +11,8 @@
 
 | Severity | Location | Finding |
 |----------|----------|---------|
-| Info | `04-validation/report.md` | Validation verdict is PASS, but `terraform plan`, Terratest, conftest, trivy, and tflint were skipped (Vault unreachable / tools not installed). Runtime policy and path behavior were not exercised in this run. |
-| Info | `03-terraform/main.tf` | `vault_token` defaults to `root` for local dev mode; acceptable per repo conventions and marked `sensitive = true`. |
+| Info | `04-validation/report.md` | Validation verdict is PASS, but `terraform plan`, Terratest, conftest, trivy, and tflint were skipped (Vault unreachable / tools not installed). Runtime policy and path verification were not exercised in this run. |
+| Info | `03-terraform/main.tf` | Default `vault_token = "root"` is dev-mode only; acceptable for this request's local scope and consistent with spec non-goals excluding production. |
 
 ## Checklist summary
 
