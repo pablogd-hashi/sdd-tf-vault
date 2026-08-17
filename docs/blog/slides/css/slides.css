@@ -1,12 +1,12 @@
 :root {
-  --bg: #ffffff;
-  --ink: #292524;
-  --muted: #78716c;
-  --line: #e7e5e4;
-  --dash: #d6d3d1;
-  --copper: #c2410c;
-  --copper-ink: #9a3412;
-  --copper-soft: #fff7ed;
+  --bg: #000000;
+  --ink: #f5f5f4;
+  --muted: #a1a1aa;
+  --line: #3f3f46;
+  --dash: #52525b;
+  --copper: #d6a24b;
+  --copper-ink: #e4c07a;
+  --copper-soft: #000000;
 }
 
 * { box-sizing: border-box; }
@@ -108,7 +108,7 @@ html, body {
 
 .cell.dash {
   border: 1px dashed var(--dash);
-  background: #fff;
+  background: transparent;
 }
 
 .cell.dash .role { color: var(--muted); font-weight: 600; }
